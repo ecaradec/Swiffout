@@ -1,0 +1,33 @@
+<html>
+    <head>
+    </head>
+    <body>
+        //javascript:alert(location.protocol+"://"+location.hostname+document.getElementsByTagName('embed').item(0).src)
+        //javascript:alert(window.location="bgamefu://"+location.protocol+"//"+location.hostname+document.getElementsByTagName('embed').item(0).src)
+        // javascript:window.location='bgamefu://'+location.protocol+'//'+location.hostname+document.getElementsByTagName('embed').item(0).src
+        //http:://armorgames.com/files/games/zoo-transport-5289.swf
+        //bgamefu://http://armorgames.com/files/games/zoo-transport-5289.swf
+                
+        // can't find items embeded in a frame that way
+        // this will work on some site though
+        // and there is other way
+        // scan for data, src, and movie
+        javascript:(function() {
+            var href="bgamefu:";
+            var swfList=[];
+            var embedList=document.getElementsByTagName('embed');
+            for(var i=0;i<embedList.length;i++)
+                if(embedList.item(i).src || embedList.item(i).data || embedList.item(i).Movie)
+                    swfList.push(embedList.item(i).src || embedList.item(i).data || embedList.item(i).Movie);
+            var objectList=document.getElementsByTagName('object');
+            for(var i=0;i<objectList.length;i++)
+                if(objectList.item(i).src || objectList.item(i).data || objectList.item(i).Movie)
+                    swfList.push(objectList.item(i).src || objectList.item(i).data || objectList.item(i).Movie);
+            alert('bgamefu:'+location.protocol+"//"+location.hostname+swfList[1]);
+            location.href='bgamefu:'+location.protocol+"//"+location.hostname+swfList[1];
+        })()
+                
+        <a href="javascript:(function() { var src=document.getElementsByTagName('embed').item(0).src; location.href='bgamefu:'+src; })">BGameFu</a>
+        <!--<a href="javascript:(function() { var script=document.createElement('script'); script.setAttribute('src', location.toString().replace(/bookmarklet\.html/,'bookmarklet.js')); document.getElementsByTagName('head').item(0).appendChild(script); alert('ok') })()">BGameFu</a>-->
+    </body>
+</html>
