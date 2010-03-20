@@ -8,7 +8,6 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "afxres.h"
-#include "../VersionNb.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -47,6 +46,45 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_LICENCE_DIALOG DIALOGEX 0, 0, 338, 118
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "SwiffOut - Licence"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Buy licence",IDC_BUY_LICENCE,8,50,74,15
+    PUSHBUTTON      "Confirm",IDC_CONFIRM,270,70,60,15
+    LTEXT           "You only have xxx days left on your trial period. If you like SwiffOut, you should consider buying a licence. It'll allow you to skip this annoooying dialog and enjoy SwiffOut for as long as you want.\n\nNow click BUY or SKIP and enjoy a great game.",IDC_STATIC,9,12,323,35
+    EDITTEXT        IDC_LIC1,8,70,259,14
+    PUSHBUTTON      "Skip",IDC_SKIP,269,99,64,15
+    GROUPBOX        "Licence",IDC_STATIC,4,1,330,88
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_LICENCE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 334
+        TOPMARGIN, 5
+        BOTTOMMARGIN, 115
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -66,8 +104,8 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION _FILEVERSION_
- PRODUCTVERSION _PRODUCTVERSION_
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -82,14 +120,14 @@ BEGIN
     BEGIN
         BLOCK "040c04b0"
         BEGIN
-            VALUE "CompanyName", "Grown Software"
-            VALUE "FileDescription", "BGameFu Runner"
-            VALUE "FileVersion", _FILEVERSIONSTR_
-            VALUE "InternalName", "bgamefurunner.exe"
-            VALUE "LegalCopyright", "(c) Grown Software.  All rights reserved."
-            VALUE "OriginalFilename", "bgamefurunner.exe"
-            VALUE "ProductName", "BGameFu"
-            VALUE "ProductVersion", _PRODUCTVERSIONSTR_
+            VALUE "CompanyName", "GrownSoftware"
+            VALUE "FileDescription", "SwiffOut Runner"
+            VALUE "FileVersion", "1.0.0"
+            VALUE "InternalName", "swiffoutrunner.exe"
+            VALUE "LegalCopyright", "(c) GrownSoftware.  All rights reserved."
+            VALUE "OriginalFilename", "swiffoutrunner.exe"
+            VALUE "ProductName", "SwiffOut"
+            VALUE "ProductVersion", "1.0.0"
         END
     END
     BLOCK "VarFileInfo"

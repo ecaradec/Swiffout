@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="bgamefusettings"
+	Name="swiffoutsettings"
 	ProjectGUID="{C4D4C0E0-AAC3-45FE-B1DC-1CC858B6F10F}"
 	RootNamespace="bgamefu"
 	Keyword="MFCProj"

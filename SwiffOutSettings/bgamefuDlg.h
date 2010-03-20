@@ -31,7 +31,7 @@ protected:
     DECLARE_MESSAGE_MAP()
 public:
 public:
-    DEVMODE dm[500];
+    DEVMODE dm[1000];
 
     CListBox m_resolutionList;
     CButton  m_apply;

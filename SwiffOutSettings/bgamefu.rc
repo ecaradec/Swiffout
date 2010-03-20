@@ -29,11 +29,11 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 235, 55
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About BGameFu"
+CAPTION "About SwiffOut"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "BGameFu Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "SwiffOut Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2010",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,16,WS_GROUP
 END
@@ -41,7 +41,7 @@ END
 IDD_BGAMEFU_DIALOG DIALOGEX 0, 0, 213, 98
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "BGameFu"
+CAPTION "SwiffOut"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Apply",IDC_BUTTON2,87,73,59,18
@@ -73,13 +73,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Grown Software"
-            VALUE "FileDescription", "BGameFu Settings"
+            VALUE "CompanyName", "GrownSoftware"
+            VALUE "FileDescription", "SwiffOut Settings"
             VALUE "FileVersion", _FILEVERSIONSTR_
-            VALUE "InternalName", "bgamefusettings.exe"
-            VALUE "LegalCopyright", "TODO: (c) Grown Software.  All rights reserved."
-            VALUE "OriginalFilename", "bgamefu.exe"
-            VALUE "ProductName", "BGameFu"
+            VALUE "InternalName", "swiffoutsettings.exe"
+            VALUE "LegalCopyright", "TODO: (c) GrownSoftware.  All rights reserved."
+            VALUE "OriginalFilename", "swiffoutsettings.exe"
+            VALUE "ProductName", "SwiffOut"
             VALUE "ProductVersion", _PRODUCTVERSIONSTR_
         END
     END
@@ -124,7 +124,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_ABOUTBOX            "&About BGameFu..."
+    IDS_ABOUTBOX            "&About SwiffOut..."
 END
 
 #endif    // English (U.S.) resources

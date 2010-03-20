@@ -116,7 +116,7 @@ BOOL CbgamefuDlg::OnInitDialog()
 	// TODO: Add extra initialization here    
     int mode=0;    
     while(1) {
-        if(mode>500)
+        if(mode>1000)
             break;
         dm[mode].dmSize=sizeof(DEVMODE);
         if(!EnumDisplaySettings(0, mode, &dm[mode]))
@@ -230,7 +230,7 @@ void CbgamefuDlg::OnBnClickedButton2()
     int sel=m_resolutionList.GetCurSel();
     DWORD index=m_resolutionList.GetItemData(sel);
     CRegKey r;
-    r.Create(HKEY_CURRENT_USER, L"Software\\BGameFu");
+    r.Create(HKEY_CURRENT_USER, L"Software\\SwiffOut");
     r.SetDWORDValue(L"width", dm[index].dmPelsWidth);
     r.SetDWORDValue(L"height", dm[index].dmPelsHeight);
     r.SetDWORDValue(L"freq", dm[index].dmDisplayFrequency);

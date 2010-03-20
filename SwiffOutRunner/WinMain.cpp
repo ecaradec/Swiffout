@@ -1,14 +1,44 @@
 #define _WIN32_WINNT 0x0400
+#include "resource.h"
 
-#include <windows.h>
+#include <afxwin.h>
 #include <Ole2.h>
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlstr.h>
 #import "c:\\windows\\system32\\macromed\\flash\\flash.ocx" named_guids no_auto_exclude
 
-// TODO : directdraw is not queried
+// sample licence key
+// {4BA4A9AD-5751-672B-C6B8-FC387F0E1CDC}
 
+// TODO : directdraw is not queried
+__forceinline bool CheckLicKey(char *lic, long N1, long N2)
+{   
+    long t;   memcpy(&t, lic, 4);
+    short k1; memcpy(&k1, lic+4, 2);
+    short k2; memcpy(&k2, lic+6, 2);
+
+    long n1; memcpy(&n1, lic+8, 4);
+    long n2; memcpy(&n2, lic+12, 4);
+
+    short t1=t&0xFFFF;
+    short t2=t>>16;
+
+    n1^=(k2<<16)|k1;
+    n2^=t;
+
+    return n1==N1 && n2==N2;
+}
+
+__forceinline bool checkSwiffOutKey() {
+    CRegKey r;
+    r.Create(HKEY_CURRENT_USER, L"Software\\SwiffOut");  
+    CLSID licence;
+    r.QueryGUIDValue(L"licence",licence);
+    return CheckLicKey((char*)&licence, 0x5fd7ef97, 0x97b8a7d2);
+}
+
+#define CHECKLICKEY checkSwiffOutKey()
 
 // host should implement direct draw for better performances
 
@@ -29,26 +59,29 @@
     //declare smart pointer type for IDirectDraw4 interface
     _COM_SMARTPTR_TYPEDEF(IDirectDraw4, IID_IDirectDraw4);
 
-struct FlashWnd : IOleClientSite,
+struct SwiffOutWnd : CWnd,
+                  IOleClientSite,
                   IOleInPlaceSiteWindowless,
                   IOleInPlaceFrame,
                   IStorage,
                   ShockwaveFlashObjects::IServiceProvider 
 {
-    HWND                                    m_hwnd;
+    CComQIPtr<ShockwaveFlashObjects::IShockwaveFlash> pSF;
     CComPtr<IOleObject>                     pOO;
     CComQIPtr<IViewObjectEx>                pVOE;
     CComQIPtr<IViewObject>                  pVO;
     CComQIPtr<IOleInPlaceObjectWindowless>  pOIPOW;
     CComQIPtr<IOleInPlaceObject>            pOIPO;
+    RECT                                    m_rSwf;
+    RECT                                    m_rWin;
+    HRESULT                                 hr;
+    void                                   *m_lpBitsOnly;
+    HDC                                     m_hdcBack;
+    HBITMAP                                 m_bmpBack;
+    CComPtr<IDirectDraw4>                   m_lpDD4;
 
-    HRESULT hr;
-    void   *m_lpBitsOnly;
-    HDC     m_hdcBack;
-    HBITMAP m_bmpBack;
-    RECT    r;    
-    CComPtr<IDirectDraw4> m_lpDD4;
-
+    DECLARE_MESSAGE_MAP()
+public:
     //the implementation of IServiceProvider interface
             virtual /* [local] */ HRESULT STDMETHODCALLTYPE raw_RemoteQueryService( 
                 /* [in] */ GUID *guidService,
@@ -86,7 +119,7 @@ struct FlashWnd : IOleClientSite,
         }
         return E_NOINTERFACE;
     }
-    static LRESULT __stdcall FlashWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+    /*static LRESULT __stdcall FlashWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {
         FlashWnd *thiz=(FlashWnd*)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
@@ -96,12 +129,37 @@ struct FlashWnd : IOleClientSite,
 			return 0;
 		}
 
-        //if(msg==WM_NCHITTEST)
-        //    return HTCAPTION;
-
-        if(msg==WM_CLOSE)
+        if(msg==WM_CLOSE) {            
+            DestroyWindow(hwnd);
             PostQuitMessage(0);
+        }
 
+        if(msg == WM_KEYDOWN && wparam==VK_ESCAPE) {
+            thiz->SetFullscreen(false);
+            //DestroyWindow(hwnd);
+            //PostQuitMessage(0);
+        }
+
+        if(msg == WM_PAINT) {        
+            HDC hdcDraw = ::GetDC(thiz->GetHWND());
+	        ::SetBkColor(hdcDraw,0);
+            ExtTextOut(hdcDraw,0,0,ETO_OPAQUE,&thiz->m_rWin,0,0,0);
+
+            RECT r;
+            GetClientRect(thiz->GetHWND(),&r);
+            r.left=thiz->m_rWin.right;
+	        ::SetBkColor(hdcDraw,GetSysColor(COLOR_3DFACE));
+            ExtTextOut(hdcDraw,0,0,ETO_OPAQUE,&r,0,0,0);
+
+	        OleDraw(thiz->pVO, DVASPECT_CONTENT, hdcDraw, &thiz->m_rSwf);
+            ::ReleaseDC(thiz->GetHWND(), hdcDraw);
+        }
+
+        if(msg == WM_COMMAND && wparam==1) {
+            thiz->SetFullscreen(true);
+        }
+
+        // only use for windowless display
 	    if (thiz && thiz->pOIPOW)
 	    {
 		    if (msg == WM_MOUSEMOVE || msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP || msg == WM_LBUTTONDBLCLK
@@ -120,24 +178,34 @@ struct FlashWnd : IOleClientSite,
 	    }
 
         return ::DefWindowProc(hwnd,msg,wparam,lparam);
-    }
+    }*/
 
-    void Create(CHAR *swf, int w, int h) {
+    void Create(CHAR *swf, RECT &rWin, RECT &rSwf) {
         DWORD   readBytes=0;
         HRESULT hr;
         m_lpBitsOnly=0;
         m_hdcBack=0;
         m_bmpBack=0;
 
-        WNDCLASS wndcls={0, FlashWindowProc, 0, 0, 0, 0, 0, 0, 0, L"TFlash"};
+        m_rSwf=rSwf;
+        m_rWin=rWin;
 
-        ATOM clss=RegisterClass(&wndcls);
+        //WNDCLASS wndcls={0, FlashWindowProc, 0, 0, 0, 0, 0, 0, 0, L"TFlash"};
+        //ATOM clss=RegisterClass(&wndcls);
 
         
-        m_hwnd=CreateWindowEx(WS_EX_TOPMOST, L"TFlash", 0, WS_VISIBLE|WS_POPUP, 0, 0, w, h, 0, 0, 0, this);
+        CreateEx(WS_EX_TOPMOST, AfxRegisterWndClass(0), L"SwiffOutRunner", WS_VISIBLE, 0, 0, rWin.right-rWin.left, rWin.bottom-rWin.top, 0, 0);
+        ModifyStyle(WS_CAPTION,WS_POPUP);
+        SetWindowPos(0,0,0,m_rWin.right-m_rWin.left,m_rWin.bottom-m_rWin.top,SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOZORDER);
 
-        hr=OleCreate(ShockwaveFlashObjects::CLSID_ShockwaveFlash, IID_IOleObject, OLERENDER_DRAW,    0, (IOleClientSite *)this, (IStorage *)this, (void **)&pOO);
-        hr=OleSetContainedObject(pOO, TRUE);
+        /*CreateWindow(L"BUTTON", L"Fullscreen", WS_CHILD|WS_VISIBLE, rWin.right+10, 0, 100, 40, m_hwnd, HMENU(1), 0, 0);
+
+        CreateWindow(L"BUTTON", L"Options", WS_CHILD|WS_VISIBLE, rWin.right+10, 50, 100, 40, m_hwnd, HMENU(1), 0, 0);
+
+        CreateWindow(L"BUTTON", L"Licence", WS_CHILD|WS_VISIBLE, rWin.right+10, 100, 100, 40, m_hwnd, HMENU(1), 0, 0);*/
+
+        hr=OleCreate(ShockwaveFlashObjects::CLSID_ShockwaveFlash, IID_IOleObject, OLERENDER_DRAW, 0, (IOleClientSite *)this, (IStorage *)this, (void **)&pOO);
+        hr=OleSetContainedObject(pOO, TRUE);        
 
         pVOE=pOO;
 
@@ -147,7 +215,7 @@ struct FlashWnd : IOleClientSite,
 
         pOIPO=pOO;
 
-        CComQIPtr<ShockwaveFlashObjects::IShockwaveFlash> pSF(pOO);
+        pSF=pOO;
 	    /*m_lVersion = pSF->FlashVersion();
 	    if ((m_lVersion & 0x00FF0000) == 0x00080000)
 		    m_bFixTransparency = TRUE;
@@ -159,6 +227,8 @@ struct FlashWnd : IOleClientSite,
 	    hr = pCPC->FindConnectionPoint(ShockwaveFlashObjects::DIID__IShockwaveFlashEvents, &m_lpConPoint);
 	    hr = m_lpConPoint->Advise((ShockwaveFlashObjects::_IShockwaveFlashEvents *)this, &m_dwConPointID);*/
 
+        // bizarrement en mode transparent c'est plus lent, mais ca consomme moins de CPU
+        // apres verification : chrome consomme moins, parce qu'il donne moins de CPU a flash.
 		//hr=pSF->put_WMode(L"transparent");
 	    hr=pSF->put_Scale(L"showAll");
 	    hr=pSF->put_BackgroundColor(0x00000000);
@@ -166,19 +236,58 @@ struct FlashWnd : IOleClientSite,
 
         hr=pOO->DoVerb(OLEIVERB_SHOW, NULL, (IOleClientSite *)this, 0, NULL, NULL);
 
-		RECT rPos;
-        GetClientRect(GetHWND(), &rPos);
-		RECT rClip = rPos;
-        pOIPO->SetObjectRects(&rPos, &rClip);
-        pOIPOW->SetObjectRects(&rPos, &rClip);
+		//RECT rPos;
+        //GetClientRect(GetHWND(), &rPos);
+		/*RECT rClip;
+        rClip.top=0;
+        rClip.left=0;
+        rClip.right=rSwf.right;
+        rClip.bottom=rSwf.bottom;*/
+
+        pOIPO->SetObjectRects(&rSwf, &rSwf);
+        pOIPOW->SetObjectRects(&rSwf, &rSwf);
         
         //hr=pSF->put_EmbedMovie(TRUE);
 
         hr=pSF->LoadMovie(0, _bstr_t(swf));
         hr=pSF->Play();
     }
+
+    void SetFullscreen(bool b) {
+        if(b) {
+            LONG style=GetWindowLong(GetHWND(),GWL_STYLE);
+            style&=~WS_CAPTION;
+            style|=WS_POPUP;
+            SetWindowLong(GetHWND(), GWL_STYLE, style);
+            SetWindowPos(0,0,0,m_rWin.right-m_rWin.left,m_rWin.bottom-m_rWin.top,SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOZORDER);
+            ::SetFocus(GetHWND());
+        } else {
+            LONG style=GetWindowLong(GetHWND(),GWL_STYLE);
+            style|=WS_CAPTION;
+            style&=~WS_POPUP;
+            SetWindowLong(GetHWND(), GWL_STYLE, style);
+            SetWindowPos(0,0,0,m_rWin.right-m_rWin.left+10,m_rWin.bottom-m_rWin.top+20,SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOZORDER);
+        }
+    }
+    
+    //
+    // Event handlers
+    //
+    void OnPaint() {
+        PAINTSTRUCT ps={0};
+        CDC *pDC=BeginPaint(&ps);
+        pDC->FillSolidRect(&m_rWin,0);
+        
+        OleDraw(pVO, DVASPECT_CONTENT, pDC->GetSafeHdc(), &m_rSwf);
+        EndPaint(&ps);
+    }
+
+    //
+    // COM Interfaces
+    //
+
     HWND GetHWND() {
-        return m_hwnd;
+        return GetSafeHwnd();
     }
 
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void ** ppvObject) {
@@ -194,8 +303,8 @@ struct FlashWnd : IOleClientSite,
 		    *ppvObject = (void*)dynamic_cast<IOleInPlaceFrame *>(this);
 	    else if (IsEqualGUID(riid, IID_IStorage))
 		    *ppvObject = (void*)dynamic_cast<IStorage *>(this);
-	else if (IsEqualGUID(riid, ShockwaveFlashObjects::IID_IServiceProvider))
-		*ppvObject = (void*)dynamic_cast<ShockwaveFlashObjects::IServiceProvider *>(this);      
+	    else if (IsEqualGUID(riid, ShockwaveFlashObjects::IID_IServiceProvider))
+		    *ppvObject = (void*)dynamic_cast<ShockwaveFlashObjects::IServiceProvider *>(this);      
 	    else
 	    {
 		    *ppvObject = 0;
@@ -246,18 +355,10 @@ struct FlashWnd : IOleClientSite,
 	    lpFrameInfo->fMDIApp = FALSE;
 	    lpFrameInfo->hwndFrame = GetHWND();
 	    lpFrameInfo->haccel = 0;
-	    lpFrameInfo->cAccelEntries = 0;
-    	
-	    RECT r;
-	    ::GetClientRect(GetHWND(), &r);
+	    lpFrameInfo->cAccelEntries = 0;    	
 
-        /*r.top=0;
-        r.left=0;
-        r.bottom=330;
-        r.right=536;*/
-
-	    *lprcPosRect = r;
-	    *lprcClipRect = r;
+	    *lprcPosRect = m_rSwf;
+	    *lprcClipRect = m_rSwf;
 	    return(S_OK);
     }
     STDMETHOD(Scroll)(SIZE scrollExtent) { return E_NOTIMPL; }
@@ -285,7 +386,9 @@ struct FlashWnd : IOleClientSite,
     STDMETHOD(SetCapture)(  BOOL fCapture) { return S_FALSE; }	 
     STDMETHOD(GetFocus)( void) { return S_OK; } 
     STDMETHOD(SetFocus)(  BOOL fFocus) { return S_OK; }	  
-    STDMETHOD(GetDC)(  LPCRECT pRect,  DWORD grfFlags,  HDC __RPC_FAR *phDC) { return S_FALSE; }			 
+    STDMETHOD(GetDC)(  LPCRECT pRect,  DWORD grfFlags,  HDC __RPC_FAR *phDC) { 
+        return S_FALSE;
+    }
     STDMETHOD(ReleaseDC)(  HDC hDC) { return S_FALSE; } 
     STDMETHOD(InvalidateRect)( 
          LPCRECT pRect,
@@ -300,15 +403,12 @@ struct FlashWnd : IOleClientSite,
     STDMETHOD(OnDefWindowMessage)(  UINT msg,  WPARAM wParam,  LPARAM lParam,  LRESULT __RPC_FAR *plResult) { return S_FALSE; } 
 
     void Draw(HDC hdcDraw, const RECT *rcDraw, BOOL bErase) {
-	    ::GetWindowRect(GetHWND(), &r);
+	    RECT rWin;
+        ::GetClientRect(GetHWND(), &rWin);
 
-        /*r.top=0;
-        r.left=0;
-        r.bottom=330;
-        r.right=536;*/
-        hdcDraw = ::GetDC(GetHWND());
-	    hr = OleDraw(pVO, DVASPECT_CONTENT, hdcDraw, &r);
-	    ::ReleaseDC(GetHWND(), hdcDraw);
+        hdcDraw = ::GetDC(GetHWND());        
+	    hr = OleDraw(pVO, DVASPECT_CONTENT, hdcDraw, &m_rSwf);
+        ::ReleaseDC(GetHWND(), hdcDraw);
     }
 
     //IStorage
@@ -347,55 +447,163 @@ struct FlashWnd : IOleClientSite,
     virtual HRESULT STDMETHODCALLTYPE Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS  *pDispParams, VARIANT  *pVarResult, EXCEPINFO  *pExcepInfo, UINT  *puArgErr) { return E_NOTIMPL; }
 };
 
-// javascript:location.href="bgamefu:http://armorgames.com/files/games/civilizations-wars-5151.swf"
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
-    CoInitialize(0);
+BEGIN_MESSAGE_MAP(SwiffOutWnd, CWnd)
+    ON_WM_CREATE()
+    ON_WM_PAINT()
+END_MESSAGE_MAP()
 
-    DEVMODE defaultDM={0};
-    defaultDM.dmSize=sizeof(DEVMODE);
-    EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &defaultDM);
-
-    /*// read from the registry instead
-    int i=0;
-    DEVMODE dm[500]={0};
-    while(1) {
-        if(i>500)
-            break;
-        dm[i].dmSize=sizeof(DEVMODE);
-        if(!EnumDisplaySettings(0, i, &dm[i]))
-            break;
-        i++;
-    }*/
-
-    DEVMODE dm={0};
-    dm.dmSize=sizeof(DEVMODE);
-    dm.dmBitsPerPel = 32;
-    dm.dmFields = DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT|DM_DISPLAYFREQUENCY;
-
-    CRegKey r;
-    r.Create(HKEY_CURRENT_USER, L"Software\\BGameFu");    
-    r.QueryDWORDValue(L"width",dm.dmPelsWidth);
-    r.QueryDWORDValue(L"height",dm.dmPelsHeight);
-    r.QueryDWORDValue(L"freq",dm.dmDisplayFrequency);
-    
-    LONG l=ChangeDisplaySettingsEx(0, &dm, 0, 0, 0);
-
-    FlashWnd *flashWnd=new FlashWnd;
-
-    CString cmdline((CHAR*)lpCmdLine);
-    CStringA swf(cmdline.Mid(8));
-    flashWnd->Create((CHAR*)swf.GetString(), dm.dmPelsWidth, dm.dmPelsHeight);
-    
-    MSG msg;
-    while(GetMessage(&msg, 0, 0, 0)!=0)
+struct CLicenceDlg : CDialog {
+    enum { IDD = IDD_LICENCE_DIALOG };
+    CLicenceDlg() : CDialog(IDD) {}
+    BOOL OnInitDialog() {
+        m_hRedBrush = ::CreateSolidBrush(RGB(255, 0, 0));
+        return CDialog::OnInitDialog();
+    }
+    void DoDataExchange(CDataExchange* pDX)
     {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        CDialog::DoDataExchange(pDX);
+        DDX_Control(pDX, IDC_LIC1, m_licence);
+    }
+    void OnBnBuy() {
+        ShellExecute(0,0,L"http://www.grownsoftware.com/swiffout", 0, 0, SW_NORMAL);
+    }
+    void OnBnConfirm() {
+        CString lic;
+        m_licence.GetWindowText(lic);
+
+        CLSID clsidLic;
+        CLSIDFromString(CComBSTR(lic),&clsidLic);
+        if(CheckLicKey((char*)&clsidLic, 0x5fd7ef97, 0x97b8a7d2)) {                        
+            MessageBox(L"Thank you",L"Licence is correct", MB_OK);
+
+            CRegKey r;
+            r.Create(HKEY_CURRENT_USER, L"Software\\SwiffOut");
+            r.SetStringValue(L"licence", lic);
+
+            EndDialog(0);
+        } else {
+            MessageBox(L"This licence is not valid. Try to copy paste it to avoid errors.",L"Ooops, invalid licence", MB_OK);
+        }
+
+        //MessageBox(lic);
+        //EndDialog(0);
+    }
+    void OnBnSkip() {
+        EndDialog(0);
     }
 
-    ChangeDisplaySettingsEx(0, &defaultDM, 0, 0, 0);
-    
-    CoUninitialize();
-    return 0;
-}
+    DECLARE_MESSAGE_MAP()
+
+    HBRUSH m_hRedBrush;
+    CEdit  m_licence;
+};
+
+BEGIN_MESSAGE_MAP(CLicenceDlg, CDialog)
+    ON_BN_CLICKED(IDC_BUY_LICENCE, &CLicenceDlg::OnBnBuy)
+    ON_BN_CLICKED(IDC_CONFIRM, &CLicenceDlg::OnBnConfirm)
+    ON_BN_CLICKED(IDC_SKIP, &CLicenceDlg::OnBnSkip)    
+END_MESSAGE_MAP()
+
+struct SwiffOut : CWinApp {
+    DEVMODE defaultDM;
+    bool    setResolution;
+
+    BOOL InitInstance() {
+    // swiffout:swiffout_href=http://armorgames.com/files/games/zoo-transport-5289.swf,swiffout_width=780,swiffout_height=450
+    // javascript:location.href="bgamefu:http://armorgames.com/files/games/civilizations-wars-5151.swf"
+        CoInitialize(0);
+
+        // parse params
+        CString cmdline(m_lpCmdLine);
+
+        //CreateDialog(0, MAKEINTRESOURCE(IDD_LICENCE_DIALOG), 0, (DLGPROC)DefDlgProc);
+        if(!CHECKLICKEY) {
+            CLicenceDlg licenceDlg;
+            licenceDlg.DoModal();
+            
+            if(!CHECKLICKEY)
+                return FALSE;
+        }
+
+        setResolution=true;
+        if(cmdline.Find(L"/setresolution=0")!=-1)
+            setResolution=false;
+
+        CStringA swf;
+        
+        int hrefIndex=cmdline.Find(L"swiffout_href=");
+        int widthIndex=cmdline.Find(L",swiffout_width=");
+        int heightIndex=cmdline.Find(L",swiffout_height=");
+        
+        swf=cmdline.Mid(hrefIndex+14, widthIndex-hrefIndex-14);    
+        int width=_ttoi(cmdline.Mid(widthIndex+16));
+        int height=_ttoi(cmdline.Mid(heightIndex+17));
+
+        memset(&defaultDM,0,sizeof(defaultDM));
+        // set resolution        
+        defaultDM.dmSize=sizeof(DEVMODE);
+        
+        EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &defaultDM);
+
+        DEVMODE dm={0};
+        dm.dmSize=sizeof(DEVMODE);
+        dm.dmBitsPerPel = 32;
+        dm.dmFields = DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT|DM_DISPLAYFREQUENCY;
+        dm.dmPelsWidth=400;
+        dm.dmPelsHeight=300;
+        dm.dmDisplayFrequency=60;
+
+        CRegKey r;
+        r.Create(HKEY_CURRENT_USER, L"Software\\SwiffOut");  
+        r.QueryDWORDValue(L"width",dm.dmPelsWidth);
+        r.QueryDWORDValue(L"height",dm.dmPelsHeight);
+        r.QueryDWORDValue(L"freq",dm.dmDisplayFrequency);
+
+        if(setResolution) {    
+            LONG l=ChangeDisplaySettingsEx(0, &dm, 0, CDS_FULLSCREEN, 0);
+        }
+
+        SwiffOutWnd *flashWnd=new SwiffOutWnd;
+        m_pMainWnd=flashWnd;
+
+        float wRatio=(float)dm.dmPelsWidth/width;
+        float hRatio=(float)dm.dmPelsHeight/height;
+
+        float ratio=min(wRatio,hRatio);
+
+        RECT rWin;
+        rWin.top=0;
+        rWin.left=0;
+        rWin.right=dm.dmPelsWidth;
+        rWin.bottom=dm.dmPelsHeight;
+
+        int diffH=dm.dmPelsHeight-height*ratio;
+        int diffW=dm.dmPelsWidth-width*ratio;
+
+        RECT rSwf;
+        rSwf.top=diffH/2;
+        rSwf.left=diffW/2;
+        rSwf.right=width*ratio+diffW/2;
+        rSwf.bottom=height*ratio+diffH/2;
+
+        flashWnd->Create((CHAR*)swf.GetString(), rWin, rSwf);
+        
+        return TRUE;
+    }
+    int ExitInstance()
+    {
+        /*MSG msg;
+        while(GetMessage(&msg, 0, 0, 0)!=0)
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        DestroyWindow(flashWnd->GetHWND());*/
+
+        if(setResolution)
+            ChangeDisplaySettingsEx(0, &defaultDM, 0, CDS_FULLSCREEN, 0);
+        
+        CoUninitialize();
+        return 0;
+    }
+} theApp;
