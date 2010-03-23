@@ -98,6 +98,10 @@ struct SwiffOutWnd : CWnd,
 
     DECLARE_MESSAGE_MAP()
 public:
+    SwiffOutWnd() {
+    }
+    ~SwiffOutWnd() {
+    }
     //the implementation of IServiceProvider interface
             virtual /* [local] */ HRESULT STDMETHODCALLTYPE raw_RemoteQueryService( 
                 /* [in] */ GUID *guidService,
@@ -286,6 +290,11 @@ public:
         
         OleDraw(pVO, DVASPECT_CONTENT, pDC->GetSafeHdc(), &m_rSwf);
         EndPaint(&ps);
+    }
+
+    void OnDestroy() {
+        CWnd::OnDestroy();
+        delete clss;
     }
 
     //
@@ -510,15 +519,16 @@ BEGIN_MESSAGE_MAP(CLicenceDlg, CDialog)
     ON_BN_CLICKED(IDC_SKIP, &CLicenceDlg::OnBnSkip)    
 END_MESSAGE_MAP()
 
+// swiffout:swiffout_href=http://armorgames.com/files/games/zoo-transport-5289.swf,swiffout_width=780,swiffout_height=450
+// javascript:location.href="bgamefu:http://armorgames.com/files/games/civilizations-wars-5151.swf"
 struct SwiffOut : CWinApp {
-    DEVMODE defaultDM;
-    bool    setResolution;
+    DEVMODE      defaultDM;
+    bool         setResolution;
+    SwiffOutWnd *flashWnd;
 
     BOOL InitInstance() {
-    // swiffout:swiffout_href=http://armorgames.com/files/games/zoo-transport-5289.swf,swiffout_width=780,swiffout_height=450
-    // javascript:location.href="bgamefu:http://armorgames.com/files/games/civilizations-wars-5151.swf"
-        CoInitialize(0);
-
+        //_CrtSetBreakAlloc(71);
+        OleInitialize(0);
         // parse params
         CString cmdline(m_lpCmdLine);
 
@@ -569,7 +579,7 @@ struct SwiffOut : CWinApp {
             LONG l=ChangeDisplaySettingsEx(0, &dm, 0, CDS_FULLSCREEN, 0);
         }
 
-        SwiffOutWnd *flashWnd=new SwiffOutWnd;
+        flashWnd=new SwiffOutWnd;
         m_pMainWnd=flashWnd;
 
         float wRatio=(float)dm.dmPelsWidth/width;
@@ -598,18 +608,12 @@ struct SwiffOut : CWinApp {
     }
     int ExitInstance()
     {
-        /*MSG msg;
-        while(GetMessage(&msg, 0, 0, 0)!=0)
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        DestroyWindow(flashWnd->GetHWND());*/
+        delete flashWnd;
 
         if(setResolution)
             ChangeDisplaySettingsEx(0, &defaultDM, 0, CDS_FULLSCREEN, 0);
         
-        CoUninitialize();
+        OleUninitialize();
         return 0;
     }
 } theApp;
