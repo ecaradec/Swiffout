@@ -60,7 +60,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Buy licence",IDC_BUY_LICENCE,8,50,74,15
     PUSHBUTTON      "Confirm",IDC_CONFIRM,270,70,60,15
-    LTEXT           "You only have xxx days left on your trial period. If you like SwiffOut, you should consider buying a licence. It'll allow you to skip this annoooying dialog and enjoy SwiffOut for as long as you want.\n\nNow click BUY or SKIP and enjoy a great game.",IDC_STATIC,9,12,323,35
+    LTEXT           "",IDC_STATIC,9,12,323,35
     EDITTEXT        IDC_LIC1,8,70,259,14
     PUSHBUTTON      "Skip",IDC_SKIP,269,99,64,15
     GROUPBOX        "Licence",IDC_STATIC,4,1,330,88

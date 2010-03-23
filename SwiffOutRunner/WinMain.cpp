@@ -453,15 +453,54 @@ public:
 };
 
 BEGIN_MESSAGE_MAP(SwiffOutWnd, CWnd)
+    ON_WM_KEYDOWN()
     ON_WM_CREATE()
+    ON_WM_DESTROY()
     ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 struct CLicenceDlg : CDialog {
     enum { IDD = IDD_LICENCE_DIALOG };
     CLicenceDlg() : CDialog(IDD) {}
-    BOOL OnInitDialog() {
-        m_hRedBrush = ::CreateSolidBrush(RGB(255, 0, 0));
+    BOOL OnInitDialog() {        
+        CString dateStr;
+        CRegKey k;
+        k.Create(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\{1F2285D5-05F4-40ab-BFC2-BF3B9B7B1F50}");
+        ULONG len=256;
+        k.QueryStringValue(0, dateStr.GetBufferSetLength(len), &len); dateStr.ReleaseBuffer();
+    
+
+        unsigned __int64 ftInstall=0;
+        SYSTEMTIME stInstall={0};
+        stInstall.wYear=_ttoi(dateStr.Mid(4,4));
+        stInstall.wMonth=_ttoi(dateStr.Mid(2,2));
+        stInstall.wDay=_ttoi(dateStr.Mid(0,2));
+
+        SystemTimeToFileTime(&stInstall,(FILETIME*)&ftInstall);
+
+        unsigned __int64 ftNow=0;
+        SYSTEMTIME stNow;
+        GetSystemTime(&stNow);
+        SystemTimeToFileTime(&stNow,(FILETIME*)&ftNow);
+
+        unsigned __int64 daysLeft=(ftNow-ftInstall) / 100 / 100 / 1000 / 60 / 60 / 24;
+
+        if(daysLeft > 15) {
+            CString daysLeftStr; daysLeftStr.Format(L"%d", daysLeft);
+            GetDlgItem(IDC_STATIC)->SetWindowText(L"Oh no !!! The trial period for SwiffOut has ended. "
+                                                  L"As a faithful SwiffOut user, you should consider buying a licence. "
+                                                  L"It'll allow you to skip this annoooying dialog and enjoy SwiffOut for as long as you want\n"
+                                                  L"Now BUY a licence and enjoy a great game.");
+
+            SetWindowPos(0,0,0,510,175,SWP_NOMOVE);
+        } else {
+            CString daysLeftStr; daysLeftStr.Format(L"%d", daysLeft);
+            GetDlgItem(IDC_STATIC)->SetWindowText(L"You only have "+daysLeftStr+L" days left on your trial period. "
+                                                  L"If you like SwiffOut, you should consider buying a licence. "
+                                                  L"It'll allow you to skip this annoooying dialog and enjoy SwiffOut for as long as you want.\n\n"
+                                                  L"Now click BUY or SKIP and enjoy a great game.");
+        }
+
         return CDialog::OnInitDialog();
     }
     void DoDataExchange(CDataExchange* pDX)
