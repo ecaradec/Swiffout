@@ -59,6 +59,21 @@ __forceinline bool checkSwiffOutKey() {
     //declare smart pointer type for IDirectDraw4 interface
     _COM_SMARTPTR_TYPEDEF(IDirectDraw4, IID_IDirectDraw4);
 
+struct FlashWndSubclass : CWnd {
+    DECLARE_MESSAGE_MAP()
+public:
+    void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+        CWnd::OnKeyDown(nChar,nRepCnt,nFlags);
+        if(nChar==VK_ESCAPE) {
+            GetParent()->PostMessage(WM_KEYDOWN, nChar, nFlags);
+        }
+    }
+};
+
+BEGIN_MESSAGE_MAP(FlashWndSubclass,CWnd)
+    ON_WM_KEYDOWN()
+END_MESSAGE_MAP()
+
 struct SwiffOutWnd : CWnd,
                   IOleClientSite,
                   IOleInPlaceSiteWindowless,
@@ -79,6 +94,7 @@ struct SwiffOutWnd : CWnd,
     HDC                                     m_hdcBack;
     HBITMAP                                 m_bmpBack;
     CComPtr<IDirectDraw4>                   m_lpDD4;
+    FlashWndSubclass                       *clss;
 
     DECLARE_MESSAGE_MAP()
 public:
@@ -118,6 +134,12 @@ public:
             }
         }
         return E_NOINTERFACE;
+    }
+    void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+        if(nChar==VK_ESCAPE) {            
+            pOO->Close(OLECLOSE_NOSAVE);
+            DestroyWindow();
+        }
     }
     /*static LRESULT __stdcall FlashWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {
@@ -216,39 +238,23 @@ public:
         pOIPO=pOO;
 
         pSF=pOO;
-	    /*m_lVersion = pSF->FlashVersion();
-	    if ((m_lVersion & 0x00FF0000) == 0x00080000)
-		    m_bFixTransparency = TRUE;
-	    else
-		    m_bFixTransparency = FALSE;
-        CComPtr<IConnectionPointContainer> pCPC;
-        HRESULT hr;
-	    hr = m_lpControl->QueryInterface(IID_IConnectionPointContainer, (void**)&pCPC);
-	    hr = pCPC->FindConnectionPoint(ShockwaveFlashObjects::DIID__IShockwaveFlashEvents, &m_lpConPoint);
-	    hr = m_lpConPoint->Advise((ShockwaveFlashObjects::_IShockwaveFlashEvents *)this, &m_dwConPointID);*/
 
         // bizarrement en mode transparent c'est plus lent, mais ca consomme moins de CPU
         // apres verification : chrome consomme moins, parce qu'il donne moins de CPU a flash.
 		//hr=pSF->put_WMode(L"transparent");
 	    hr=pSF->put_Scale(L"showAll");
 	    hr=pSF->put_BackgroundColor(0x00000000);
-	    //hr=pSF->put_EmbedMovie(FALSE);
 
         hr=pOO->DoVerb(OLEIVERB_SHOW, NULL, (IOleClientSite *)this, 0, NULL, NULL);
-
-		//RECT rPos;
-        //GetClientRect(GetHWND(), &rPos);
-		/*RECT rClip;
-        rClip.top=0;
-        rClip.left=0;
-        rClip.right=rSwf.right;
-        rClip.bottom=rSwf.bottom;*/
-
+        
         pOIPO->SetObjectRects(&rSwf, &rSwf);
         pOIPOW->SetObjectRects(&rSwf, &rSwf);
-        
-        //hr=pSF->put_EmbedMovie(TRUE);
 
+        HWND flashHWND;
+        pOIPO->GetWindow(&flashHWND);
+        clss=new FlashWndSubclass;
+        clss->SubclassWindow(flashHWND);
+        
         hr=pSF->LoadMovie(0, _bstr_t(swf));
         hr=pSF->Play();
     }
