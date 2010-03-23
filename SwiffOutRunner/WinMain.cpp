@@ -103,10 +103,10 @@ public:
     ~SwiffOutWnd() {
     }
     //the implementation of IServiceProvider interface
-            virtual /* [local] */ HRESULT STDMETHODCALLTYPE raw_RemoteQueryService( 
-                /* [in] */ GUID *guidService,
-                /* [in] */ GUID *riid,
-                /* [out] */ IUnknown **ppvObject)
+    virtual /* [local] */ HRESULT STDMETHODCALLTYPE raw_RemoteQueryService( 
+            /* [in] */ GUID *guidService,
+            /* [in] */ GUID *riid,
+            /* [out] */ IUnknown **ppvObject)
     {
         HRESULT hr;
         if (IsEqualGUID(*guidService, IID_IDirectDraw3))
@@ -216,19 +216,9 @@ public:
         m_rSwf=rSwf;
         m_rWin=rWin;
 
-        //WNDCLASS wndcls={0, FlashWindowProc, 0, 0, 0, 0, 0, 0, 0, L"TFlash"};
-        //ATOM clss=RegisterClass(&wndcls);
-
-        
         CreateEx(WS_EX_TOPMOST, AfxRegisterWndClass(0), L"SwiffOutRunner", WS_VISIBLE, 0, 0, rWin.right-rWin.left, rWin.bottom-rWin.top, 0, 0);
         ModifyStyle(WS_CAPTION,WS_POPUP);
         SetWindowPos(0,0,0,m_rWin.right-m_rWin.left,m_rWin.bottom-m_rWin.top,SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOZORDER);
-
-        /*CreateWindow(L"BUTTON", L"Fullscreen", WS_CHILD|WS_VISIBLE, rWin.right+10, 0, 100, 40, m_hwnd, HMENU(1), 0, 0);
-
-        CreateWindow(L"BUTTON", L"Options", WS_CHILD|WS_VISIBLE, rWin.right+10, 50, 100, 40, m_hwnd, HMENU(1), 0, 0);
-
-        CreateWindow(L"BUTTON", L"Licence", WS_CHILD|WS_VISIBLE, rWin.right+10, 100, 100, 40, m_hwnd, HMENU(1), 0, 0);*/
 
         hr=OleCreate(ShockwaveFlashObjects::CLSID_ShockwaveFlash, IID_IOleObject, OLERENDER_DRAW, 0, (IOleClientSite *)this, (IStorage *)this, (void **)&pOO);
         hr=OleSetContainedObject(pOO, TRUE);        
