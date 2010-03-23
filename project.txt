@@ -1,15 +1,15 @@
 todo
 ----
-- conserver le ratio (at small size zoo doesn't work well and we can see debug info - size should be the one of the browser to avoid issues )
-- faire naviguer le jeu vers une page vide pendant le lancement du jeu avoir un bouton retourner au jeu (pour eviter de consommer le CPU )
+x conserver le ratio (at small size zoo doesn't work well and we can see debug info - size should be the one of the browser to avoid issues )
+x check resolution closest to the game
+x fix crash on exit
+x make a licenciable version
+x check email work
+x verifier si les parties sont sauvegardée
+x faire naviguer le jeu vers une page vide pendant le lancement du jeu avoir un bouton retourner au jeu (pour eviter de consommer le CPU )
 - allow to quit the game with esc ?
-- check resolution closest to the game
-- fix crash on exit
 - do something if the game doesn't load
-- make a licenciable version
 - get a ejunkie account
-- check email work
-- verifier si les parties sont sauvegardée
 
 web site ideas
 --------------
