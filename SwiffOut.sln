@@ -5,6 +5,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "swiffoutrunner", "SwiffOutR
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "swiffoutsettings", "SwiffOutSettings\bgamefu.vcproj", "{C4D4C0E0-AAC3-45FE-B1DC-1CC858B6F10F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{10517FD6-11D4-4CDA-A223-F23B9836CC1D}"
+	ProjectSection(SolutionItems) = preProject
+		project.txt = project.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
