@@ -1,2 +1,2 @@
-VIAddVersionKey "FileVersion" "1.0.0.4"
-VIProductVersion "1.0.0.4"
+VIAddVersionKey "FileVersion" "1.0.0.5"
+VIProductVersion "1.0.0.5"
