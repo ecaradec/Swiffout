@@ -142,6 +142,9 @@ Function GetTime
 	Exch $0
 FunctionEnd
 
+;--------------------------------
+;include version number
+    !include "VersionNb.nsh"
 
 ;--------------------------------
 ;include modern ui

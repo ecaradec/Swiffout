@@ -29,10 +29,33 @@ struct SwiffOut : CWinApp {
 
         //CreateDialog(0, MAKEINTRESOURCE(IDD_LICENCE_DIALOG), 0, (DLGPROC)DefDlgProc);
         if(!CHECKLICKEY) {
-            CLicenceDlg licenceDlg;
+            CString dateStr;
+            CRegKey k;
+            k.Create(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\{1F2285D5-05F4-40ab-BFC2-BF3B9B7B1F50}");
+            ULONG len=256;
+            k.QueryStringValue(0, dateStr.GetBufferSetLength(len), &len); dateStr.ReleaseBuffer();
+        
+
+            unsigned __int64 ftInstall=0;
+            SYSTEMTIME stInstall={0};
+            stInstall.wYear=_ttoi(dateStr.Mid(4,4));
+            stInstall.wMonth=_ttoi(dateStr.Mid(2,2));
+            stInstall.wDay=_ttoi(dateStr.Mid(0,2));
+
+            SystemTimeToFileTime(&stInstall,(FILETIME*)&ftInstall);
+
+            unsigned __int64 ftNow=0;
+            SYSTEMTIME stNow;
+            GetSystemTime(&stNow);
+            SystemTimeToFileTime(&stNow,(FILETIME*)&ftNow);
+
+            int trialPeriodLength=15;
+            unsigned __int64 daysLeft=trialPeriodLength - (ftNow-ftInstall) / 100 / 100 / 1000 / 60 / 60 / 24;
+
+            CLicenceDlg licenceDlg(daysLeft); // could be two dialogs
             licenceDlg.DoModal();
             
-            if(!CHECKLICKEY)
+            if(!CHECKLICKEY && daysLeft<=0)
                 return FALSE;
         }
 
@@ -60,8 +83,8 @@ struct SwiffOut : CWinApp {
         dm.dmSize=sizeof(DEVMODE);
         dm.dmBitsPerPel = 32;
         dm.dmFields = DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT|DM_DISPLAYFREQUENCY;
-        dm.dmPelsWidth=400;
-        dm.dmPelsHeight=300;
+        dm.dmPelsWidth=800;
+        dm.dmPelsHeight=600;
         dm.dmDisplayFrequency=60;
 
         CRegKey r;

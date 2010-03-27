@@ -77,7 +77,7 @@ BEGIN
             VALUE "FileDescription", "SwiffOut Settings"
             VALUE "FileVersion", _FILEVERSIONSTR_
             VALUE "InternalName", "swiffoutsettings.exe"
-            VALUE "LegalCopyright", "TODO: (c) GrownSoftware.  All rights reserved."
+            VALUE "LegalCopyright", "(c) GrownSoftware.  All rights reserved."
             VALUE "OriginalFilename", "swiffoutsettings.exe"
             VALUE "ProductName", "SwiffOut"
             VALUE "ProductVersion", _PRODUCTVERSIONSTR_
