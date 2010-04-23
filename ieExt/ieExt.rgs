@@ -1,0 +1,31 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'ieExt'
+		'ieExt.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+}
+
+HKLM {
+  NoRemove SOFTWARE {
+    NoRemove Microsoft {
+      NoRemove 'Internet Explorer' {
+        NoRemove Extensions {
+          ForceRemove '{16732D79-A020-4d07-BC04-C9A6E545B1DC}' = s 'SwiffOut' {
+            val 'ButtonText' = s 'SwiffOut'
+            val 'CLSID' = s '{1FBA04EE-3024-11d2-8F1F-0000F87ABD16}'
+            val 'ClsidExtension' = s '{9BA9E4C9-1147-4C81-B45E-DF966D095543}'
+            val 'Default Visible' = s 'Yes'
+            val 'HotIcon' = s 'C:\devel\SwiffOut\swiffout.ico'
+            val 'Icon' = s 'C:\devel\SwiffOut\swiffout.ico'
+            val 'ToolTip' = s 'SwiffOut'
+          }
+        }
+      }      
+    }
+  }
+}

@@ -1,0 +1,27 @@
+HKCR
+{
+	ieExt.ieExtImpl.1 = s 'ieExtImpl Class'
+	{
+		CLSID = s '{9BA9E4C9-1147-4C81-B45E-DF966D095543}'
+	}
+	ieExt.ieExtImpl = s 'ieExtImpl Class'
+	{
+		CLSID = s '{9BA9E4C9-1147-4C81-B45E-DF966D095543}'
+		CurVer = s 'ieExt.ieExtImpl.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {9BA9E4C9-1147-4C81-B45E-DF966D095543} = s 'ieExtImpl Class'
+		{
+			ProgID = s 'ieExt.ieExtImpl.1'
+			VersionIndependentProgID = s 'ieExt.ieExtImpl'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			val AppID = s '%APPID%'
+			'TypeLib' = s '{3E784728-920C-4C54-9954-BE998D20E299}'
+		}
+	}
+}

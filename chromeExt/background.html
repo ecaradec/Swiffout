@@ -1,0 +1,32 @@
+<html>
+    <script>
+        var lastTab;
+        var swfList=[];
+        function runBestSWF() {
+            swfList.sort(function(a,b) { return b.width*b.height-a.width*a.height; });
+
+            //alert(swfList.length);
+            //for(var i=0;i<swfList.length;i++) {
+            //    console.log(i+" : "+swfList[i].src + ", " + swfList[i].flashVars)
+            //}            
+
+            swfList[0].msg="runSwf";            
+            chrome.tabs.sendRequest(lastTab.id, swfList[0], function(response) {});
+        }
+
+        chrome.browserAction.onClicked.addListener(function(tab) {            
+            lastTab=tab;
+            swfList=[];
+            chrome.tabs.sendRequest(tab.id, {msg: "findSwf"}, function(response) {});
+        });
+
+        var TID;
+        chrome.extension.onRequest.addListener(
+            function(request, sender, sendResponse) {
+                if(TID!=undefined) clearTimeout(TID);
+                TID=setTimeout(runBestSWF, 1000);
+                swfList.push(request);
+            });
+        
+    </script>
+</html>

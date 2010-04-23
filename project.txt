@@ -10,6 +10,7 @@ x faire naviguer le jeu vers une page vide pendant le lancement du jeu avoir un 
 - allow to quit the game with esc ?
 - do something if the game doesn't load
 - get a ejunkie account
+- add the flash vars, fbjs
 
 web site ideas
 --------------

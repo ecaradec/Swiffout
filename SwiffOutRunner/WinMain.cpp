@@ -11,6 +11,7 @@
 #include "SwiffOutWnd.h"
 #include "LicenceDlg.h"
 
+
 // sample licence key
 // {4BA4A9AD-5751-672B-C6B8-FC387F0E1CDC}
 
@@ -26,6 +27,12 @@ struct SwiffOut : CWinApp {
         OleInitialize(0);
         // parse params
         CString cmdline(m_lpCmdLine);
+
+        //CComPtr<IUnknown> p;
+        //CLSID clsid;
+        //CLSIDFromString(L"{9BA9E4C9-1147-4C81-B45E-DF966D095543}", &clsid);
+        //p.CoCreateInstance(clsid);
+        //p.CreateInstance(
 
         //CreateDialog(0, MAKEINTRESOURCE(IDD_LICENCE_DIALOG), 0, (DLGPROC)DefDlgProc);
         if(!CHECKLICKEY) {

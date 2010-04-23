@@ -1,0 +1,9 @@
+; ieExt.def : Declares the module parameters.
+
+LIBRARY      "ieExt.DLL"
+
+EXPORTS
+	DllCanUnloadNow		PRIVATE
+	DllGetClassObject	PRIVATE
+	DllRegisterServer	PRIVATE
+	DllUnregisterServer	PRIVATE

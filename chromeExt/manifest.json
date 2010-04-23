@@ -1,0 +1,17 @@
+{
+  "name": "SwiffOut",
+  "version": "1.0",
+  "description": "SwiffOut - Play flash games real fullscreen.",
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "icons": { "48":"icon48.png", "128":"icon128.png" },
+  "permissions": ["tabs","http://grownsoftware.com/*"],
+  "content_scripts": [ {
+      "js": [ "swiffout.js"],
+      "matches": [ "http://*/*"],
+      "run_at": "document_start",
+      "all_frames": true
+  } ],
+  "background_page": "background.html"
+}

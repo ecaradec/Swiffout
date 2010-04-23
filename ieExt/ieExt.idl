@@ -1,0 +1,36 @@
+// ieExt.idl : IDL source for ieExt
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (ieExt.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(1C0D37DB-4646-4158-A876-1F748C3F53EC),
+	dual,
+	nonextensible,
+	helpstring("IieExtImpl Interface"),
+	pointer_default(unique)
+]
+interface IieExtImpl : IDispatch{
+};
+[
+	uuid(3E784728-920C-4C54-9954-BE998D20E299),
+	version(1.0),
+	helpstring("SwiffOut IE Extension 1.0 Type Library")
+]
+library ieExtLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(9BA9E4C9-1147-4C81-B45E-DF966D095543),
+		helpstring("ieExtImpl Class")
+	]
+	coclass ieExtImpl
+	{
+		[default] interface IieExtImpl;
+	};
+};
