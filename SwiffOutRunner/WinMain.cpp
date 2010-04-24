@@ -72,15 +72,17 @@ struct SwiffOut : CWinApp {
         if(cmdline.Find(L"/setresolution=0")!=-1)
             setResolution=false;
 
-        CStringA swf;
+        CStringA swf, flashvars;
         
         int hrefIndex=cmdline.Find(L"swiffout_href=");
         int widthIndex=cmdline.Find(L",swiffout_width=");
         int heightIndex=cmdline.Find(L",swiffout_height=");
+        int flashVarsIndex=cmdline.Find(L",swiffout_flashvars=");
         
         swf=cmdline.Mid(hrefIndex+14, widthIndex-hrefIndex-14);    
         int width=_ttoi(cmdline.Mid(widthIndex+16));
         int height=_ttoi(cmdline.Mid(heightIndex+17));
+        flashvars=cmdline.Mid(flashVarsIndex+20);
 
         memset(&defaultDM,0,sizeof(defaultDM));
         // set resolution        
@@ -129,7 +131,7 @@ struct SwiffOut : CWinApp {
         rSwf.right=width*ratio+diffW/2;
         rSwf.bottom=height*ratio+diffH/2;
 
-        flashWnd->Create((CHAR*)swf.GetString(), rWin, rSwf);
+        flashWnd->Create((CHAR*)swf.GetString(), (CHAR*)flashvars.GetString(), rWin, rSwf);
         
         return TRUE;
     }

@@ -166,7 +166,7 @@ public:
         return ::DefWindowProc(hwnd,msg,wparam,lparam);
     }*/
 
-    void Create(CHAR *swf, RECT &rWin, RECT &rSwf) {
+    void Create(CHAR *swf, CHAR *flashVars, RECT &rWin, RECT &rSwf) {
         DWORD   readBytes=0;
         HRESULT hr;
         m_lpBitsOnly=0;
@@ -198,6 +198,9 @@ public:
 		//hr=pSF->put_WMode(L"transparent");
 	    hr=pSF->put_Scale(L"showAll");
 	    hr=pSF->put_BackgroundColor(0x00000000);
+
+        CComPtr<IDispatch> pDispSF(pSF);
+        pDispSF.PutPropertyByName(L"flashVars", &CComVariant(flashVars));
 
         hr=pOO->DoVerb(OLEIVERB_SHOW, NULL, (IOleClientSite *)this, 0, NULL, NULL);
         
