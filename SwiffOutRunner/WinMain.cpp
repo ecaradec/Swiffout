@@ -50,7 +50,7 @@ struct SwiffOut : CWinApp {
             SystemTimeToFileTime(&stNow,(FILETIME*)&ftNow);
 
             int trialPeriodLength=15;
-            unsigned __int64 daysLeft=trialPeriodLength - (ftNow-ftInstall) / 100 / 100 / 1000 / 60 / 60 / 24;
+            __int64 daysLeft=trialPeriodLength - (ftNow-ftInstall) / 100 / 100 / 1000 / 60 / 60 / 24;
 
             CLicenceDlg licenceDlg(daysLeft); // could be two dialogs
             licenceDlg.DoModal();
