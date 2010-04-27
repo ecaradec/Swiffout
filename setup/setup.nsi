@@ -155,8 +155,8 @@ FunctionEnd
 ;general
 
     ;name and file
-    name "swiffout setup"
-    outfile "..\swiffout setup.exe"
+    name "SwiffOut"
+    outfile "..\SwiffOut Setup.exe"
 
     ;request application privileges for windows vista
     requestexecutionlevel user
