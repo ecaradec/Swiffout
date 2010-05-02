@@ -170,6 +170,7 @@ FunctionEnd
 ;pages    
     !insertmacro mui_page_welcome
     !insertmacro mui_page_license "license.txt"
+    ;!insertmacro mui_page_components
     !insertmacro mui_page_instfiles
     
     !insertmacro mui_unpage_confirm
@@ -188,6 +189,13 @@ section
 
     file ..\release\swiffoutrunner.exe
     file ..\release\swiffoutsettings.exe
+
+    ;ieExt
+    file ..\release\ieExt.dll
+    ; firefoxExt
+    file ..\firefoxExt.xpi
+    ; chromeExt
+    file ..\chromeExt.crx
 
     createdirectory "$smprograms\swiffout"
     createshortcut "$smprograms\swiffout\swiffout uninstall.lnk" "$programfiles\swiffout\uninstall.exe"
@@ -222,6 +230,19 @@ section
     execshell "open" "http://grownsoftware.com/swiffout/help.html"
 sectionend
 
+section "ieExt" ieExt
+    RegDLL  "$programfiles\swiffout\ieExt.dll"
+sectionend
+
+section "firefoxExt" firefoxExt
+    writeregstr hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com" "$programfiles\swiffout\firefoxExt.xpi"
+sectionend
+
+section "chromeExt" chromeExt
+    writeregstr hklm "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "path" "$programfiles\swiffout\chromeExt.crx"
+    writeregstr hklm "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "version" "1.0"
+sectionend
+
 ;--------------------------------
 ;uninstaller section
 
@@ -235,5 +256,13 @@ section "uninstall"
 
     deleteregkey hkcr "swiffout"
     deleteregkey hkcu "software\swiffout"
+    
+    ;chromeExt
+    deleteregkey hklm "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd"
 
+    ;firefoxExt
+    deleteregvalue hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com"
+
+    ;ieExt
+    UnRegDLL "$programfiles\swiffout\ieExt.dll"
 sectionend

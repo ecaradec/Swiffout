@@ -69,16 +69,27 @@ public:
         }
     };
 
-    void CollectEmbeds(IDispatch *pDispDoc, std::vector<Embed> *embeds)
+    void CollectEmbeds(const TCHAR *tag, IDispatch *pDispDoc, std::vector<Embed> *embeds)
     {
         int nbObjects=0;
 
         CComQIPtr<IHTMLDocument3> pDoc3(pDispDoc);
         CComPtr<IHTMLElementCollection> elements;
-        HRESULT hr=pDoc3->getElementsByTagName(CComBSTR("object"), &elements);
+        HRESULT hr=pDoc3->getElementsByTagName(CComBSTR(tag), &elements);
         LONG nEmbeds=0;
         hr=elements->get_length(&nEmbeds);
         nbObjects+=nEmbeds;
+
+
+        CComQIPtr<IHTMLDocument2> pDoc2(pDispDoc);
+        CComPtr<IHTMLLocation> pLoc;
+        pDoc2->get_location(&pLoc);
+        CComBSTR hostnameBSTR, protocolBSTR, hrefBSTR;
+        pLoc->get_hostname(&hostnameBSTR);
+        pLoc->get_protocol(&protocolBSTR);
+        pLoc->get_href(&hrefBSTR);
+
+        CString hostname(hostnameBSTR), protocol(protocolBSTR), href(hrefBSTR);
 
         for(int i=0;i<nEmbeds;i++) {
             Embed e;
@@ -87,10 +98,20 @@ public:
 
             CComQIPtr<IHTMLElement> pElt(pDispE);
 
-            if(pDispE.GetPropertyByName(CComBSTR("src"), &e.src)==S_OK || 
-               pDispE.GetPropertyByName(CComBSTR("Movie"), &e.src)==S_OK || 
-               pDispE.GetPropertyByName(CComBSTR("Data"), &e.src)==S_OK) {
+            if(pDispE.GetPropertyByName(CComBSTR("Data"), &e.src)==S_OK ||
+               pDispE.GetPropertyByName(CComBSTR("src"), &e.src)==S_OK || 
+               pDispE.GetPropertyByName(CComBSTR("Movie"), &e.src)==S_OK) {
             }
+
+            CString swf(e.src);
+            if(swf.Left(1)=="/") {
+                swf=protocol+L"//"+hostname+swf;
+            } else if(swf.Left(7)=="http://" || swf.Left(8)=="https://")
+                ;
+            else
+                swf=href.Left(href.ReverseFind(L'/')+1)+swf;
+
+            e.src=swf;
 
             CComVariant widthBSTR, heightBSTR;
             pDispE.GetPropertyByName(CComBSTR("width"), &widthBSTR)==S_OK ? e.width=_wtoi(CStringW(widthBSTR)) : 800;
@@ -119,6 +140,11 @@ public:
 
             embeds->push_back(e);
         }
+    }
+    void CollectEmbeds(IDispatch *pDispDoc, std::vector<Embed> *embeds)
+    {
+        CollectEmbeds(L"object", pDispDoc, embeds);
+        CollectEmbeds(L"embed", pDispDoc, embeds);
     }
 
     HRESULT STDMETHODCALLTYPE Exec(const GUID *pguidCmdGroup, DWORD nCmdID, DWORD nCmdexecopt, VARIANT *pvaIn, VARIANT *pvaOut)
@@ -167,19 +193,21 @@ public:
 
             CComPtr<IDispatch> pDispDocFrame;
 
-            pBrowser->get_Document(&pDispDocFrame);
+            pBrowser->get_Document(&pDispDocFrame); 
             if(!pDispDocFrame)
                 continue;
 
-            CollectEmbeds(pDispDocFrame, &embeds);
+            CollectEmbeds(pDispDoc, &embeds);
         }
 
         std::sort(embeds.begin(), embeds.end(), Embed::isbiggest);
 
-        CString cmd; cmd.Format(L"swiffout:swiffout_href=%s,swiffout_width=%d,swiffout_height=%d,swiffout_flashvars=%s", CString(embeds[0].src), embeds[0].width, embeds[0].height, CString(embeds[0].flashVars));
-        ShellExecute(0, 0, cmd, 0, 0, SW_SHOWNORMAL);
-        pWB2->Navigate(CComBSTR(L"http://www.grownsoftware.com/swiffout/cpu-preservation.html"), 0, 0, 0, 0);
-        
+        if(embeds.size()>0) {
+            CString cmd; cmd.Format(L"swiffout:swiffout_href=%s,swiffout_width=%d,swiffout_height=%d,swiffout_flashvars=%s", CString(embeds[0].src), embeds[0].width, embeds[0].height, CString(embeds[0].flashVars));
+            ShellExecute(0, 0, cmd, 0, 0, SW_SHOWNORMAL);
+            pWB2->Navigate(CComBSTR(L"http://www.grownsoftware.com/swiffout/cpu-preservation.html"), 0, 0, 0, 0);
+        }
+
         return S_OK;
     }    
 };

@@ -214,6 +214,8 @@ public:
         
         hr=pSF->LoadMovie(0, _bstr_t(swf));
         hr=pSF->Play();
+
+        SetCapture(TRUE);
     }
 
     void SetFullscreen(bool b) {

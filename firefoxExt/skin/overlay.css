@@ -1,0 +1,9 @@
+#swiffout-button,
+.swiffout-button {
+	list-style-image: url("swiffout.png");
+}
+toolbar[iconsize="small"] #swiffout-button,
+toolbar[iconsize="small"] .swiffout-button,
+.swiffout-button {
+	list-style-image: url("swiffout.png");
+}

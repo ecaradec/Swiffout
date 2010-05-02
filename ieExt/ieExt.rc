@@ -34,7 +34,7 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""winres.h""\r\n"
+    "#include ""winres.h""\r\n" 
     "\0"
 END
 
@@ -123,6 +123,15 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 //
 
 IDR_IEEXTIMPL           REGISTRY                "ieExtImpl.rgs"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "swiffout.ico"
 #endif    // French (France) resources
 /////////////////////////////////////////////////////////////////////////////
 

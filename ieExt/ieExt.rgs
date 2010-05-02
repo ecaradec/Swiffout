@@ -20,8 +20,8 @@ HKLM {
             val 'CLSID' = s '{1FBA04EE-3024-11d2-8F1F-0000F87ABD16}'
             val 'ClsidExtension' = s '{9BA9E4C9-1147-4C81-B45E-DF966D095543}'
             val 'Default Visible' = s 'Yes'
-            val 'HotIcon' = s 'C:\devel\SwiffOut\swiffout.ico'
-            val 'Icon' = s 'C:\devel\SwiffOut\swiffout.ico'
+            val 'HotIcon' = s '%MODULE%,201'
+            val 'Icon' = s '%MODULE%,201'
             val 'ToolTip' = s 'SwiffOut'
           }
         }

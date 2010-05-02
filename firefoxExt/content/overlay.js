@@ -1,0 +1,100 @@
+swiffout = {
+    onLoad: function() {
+        // initialization code
+        this.initialized = true;
+        this.strings = document.getElementById("swiffout-strings");
+
+       // Read preferences
+       var nsIPrefServiceObj = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+       var nsIPrefBranchObj = nsIPrefServiceObj.getBranch("swiffout.");
+
+       //First Run?
+       if(!nsIPrefBranchObj.prefHasUserValue("toolbarbutton-initialized")) {
+            nsIPrefBranchObj.setBoolPref("toolbarbutton-initialized",true);
+            try {
+              var firefoxnav = document.getElementById("nav-bar");
+              var curSet = firefoxnav.currentSet;
+              if (curSet.indexOf("swiffout-button") == -1)
+              {
+                var set;
+                // Place the button before the urlbar
+                if (curSet.indexOf("urlbar-container") != -1)
+                  set = curSet.replace(/urlbar-container/, "swiffout-button,urlbar-container");
+                else  // at the end
+                  set = curSet + ",swiffout-button";
+                firefoxnav.setAttribute("currentset", set);
+                firefoxnav.currentSet = set;
+                document.persist("nav-bar", "currentset");
+                // If you don't do the following call, funny things happen
+                try {
+                  BrowserToolboxCustomizeDone(true);
+                }
+                catch (e) { }
+              }
+            }
+            catch(e) { }
+        }
+    },
+    onMenuItemCommand: function(e) {        
+        function log(msg) {
+            var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+            consoleService.logStringMessage(""+msg);
+        }
+
+        function getSrc(e) {
+            var src=e.getAttribute("data") || e.src || e.getAttribute("Movie");
+            
+            var l=gBrowser.contentDocument.location;
+            if(/^\//.test(src))
+                return l.protocol+"://"+l.hostname;
+            else if(/^[a-zA-Z]+:/.test(src))
+                return src;
+
+            return l.href.replace(/\/.*?$/,src);
+        }
+
+        var swfList=[];
+        function parseDocument(d) {
+            var items=d.getElementsByTagName("embed");            
+            for(var e=0;e<items.length;e++) {
+                swfList.push({
+                    src:getSrc(items[e]),
+                    orgSrc:items[e].getAttribute("data") || items[e].src || items[e].getAttribute("Movie"),
+                    width:items[e].width,
+                    height:items[e].height,
+                    flashvars:items[e].getAttribute("flashvars")
+                });
+            }
+            var items=d.getElementsByTagName("object");
+            for(var e=0;e<items.length;e++) {
+                swfList.push({
+                    src:getSrc(items[e]),
+                    orgSrc:items[e].getAttribute("data") || items[e].src || items[e].getAttribute("Movie"),
+                    width:items[e].width,
+                    height:items[e].height,
+                    flashvars:items[e].getAttribute("flashvars")
+                });
+            }
+        }
+
+        parseDocument(gBrowser.contentDocument);
+
+        var iframes=gBrowser.contentDocument.getElementsByTagName("iframe");
+        for(var i=0;i<iframes.length;i++) {
+            parseDocument(iframes[i].contentDocument);
+        }
+
+        swfList.sort(function(a,b) { return (a.width*a.height)<(b.width*b.height); });
+
+        //for(var i=swfList.length-1;i>=0;i--) {
+        //    log("orgSrc :"+swfList[i].orgSrc+",src : "+swfList[i].src+",width : "+swfList[i].width+",height : "+swfList[i].height+",flashvars : "+swfList[i].flashvars);
+        //}
+        //alert("swiffout:swiffout_href="+swfList[0].src+",swiffout_width="+swfList[0].width+",swiffout_height="+swfList[0].height+",swiffout_flashvars="+swfList[0].flashvars);
+        gBrowser.contentDocument.location.href="swiffout:swiffout_href="+swfList[0].src+",swiffout_width="+swfList[0].width+",swiffout_height="+swfList[0].height+",swiffout_flashvars=";
+
+        setTimeout(function() {
+            gBrowser.contentDocument.location.href="http://grownsoftware.com/swiffout/cpu-preservation.html";
+        }, 100);
+    }
+};
+window.addEventListener("load", function(e) { swiffout.onLoad(e); }, false);

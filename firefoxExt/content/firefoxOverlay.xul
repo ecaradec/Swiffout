@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://swiffout/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://swiffout/locale/swiffout.dtd">
+<overlay id="swiffout-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script src="overlay.js"/>
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="swiffout-strings" src="chrome://swiffout/locale/swiffout.properties"/>
+  </stringbundleset>
+
+  <toolbarpalette id="BrowserToolbarPalette">
+      <toolbarbutton id="swiffout-button" class="swiffout-button" label="SwiffOut" oncommand="swiffout.onMenuItemCommand(event)" tooltiptext="SwiffOut"/>
+  </toolbarpalette>
+</overlay>

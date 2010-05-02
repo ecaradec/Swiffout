@@ -7,10 +7,14 @@ x make a licenciable version
 x check email work
 x verifier si les parties sont sauvegardée
 x faire naviguer le jeu vers une page vide pendant le lancement du jeu avoir un bouton retourner au jeu (pour eviter de consommer le CPU )
-- allow to quit the game with esc ?
+x allow to quit the game with esc ?
+x get a ejunkie account
 - do something if the game doesn't load
-- get a ejunkie account
+- do something for the esc key in case the game use it
 - add the flash vars, fbjs
+- allow to play once everyday for as long as you like
+- rgs file : set correct path to icon
+- changer la page de fin d'installation
 
 web site ideas
 --------------

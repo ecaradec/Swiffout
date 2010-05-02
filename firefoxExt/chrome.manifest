@@ -1,0 +1,5 @@
+content	swiffout	content/
+locale	swiffout	en-US	locale/en-US/
+skin	swiffout	classic/1.0	skin/
+overlay	chrome://browser/content/browser.xul	chrome://swiffout/content/firefoxOverlay.xul
+style	chrome://global/content/customizeToolbar.xul	chrome://swiffout/skin/overlay.css
