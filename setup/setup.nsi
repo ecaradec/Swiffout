@@ -193,7 +193,7 @@ section
     ;ieExt
     file ..\release\ieExt.dll
     ; firefoxExt
-    file ..\firefoxExt.xpi
+    file /r ..\firefoxExt
     ; chromeExt
     file ..\chromeExt.crx
 
@@ -235,7 +235,7 @@ section "ieExt" ieExt
 sectionend
 
 section "firefoxExt" firefoxExt
-    writeregstr hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com" "$programfiles\swiffout\firefoxExt.xpi"
+    writeregstr hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com" "$programfiles\swiffout\firefoxExt"
 sectionend
 
 section "chromeExt" chromeExt
@@ -252,7 +252,7 @@ section "uninstall"
 
     delete "$programfiles\swiffout\uninstall.exe"
 
-    rmdir "$programfiles\swiffout"
+    rmdir /r "$programfiles\swiffout"
 
     deleteregkey hkcr "swiffout"
     deleteregkey hkcu "software\swiffout"
