@@ -46,11 +46,13 @@ swiffout = {
             
             var l=gBrowser.contentDocument.location;
             if(/^\//.test(src))
-                return l.protocol+"://"+l.hostname;
-            else if(/^[a-zA-Z]+:/.test(src))
-                return src;
+                src=l.protocol+"//"+l.hostname+src;
+            else if(/^http:/.test(src) || /^https:/.test(src))
+                src=src;
+            else
+                src=l.href.substring(0,l.href.lastIndexOf("/"))+"/"+src;
 
-            return l.href.replace(/\/.*?$/,src);
+            return src;
         }
 
         var swfList=[];
