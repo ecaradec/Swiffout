@@ -58,11 +58,9 @@ struct SwiffOut : CWinApp {
 
             int trialPeriodLength=30;
             __int64 daysLeft=trialPeriodLength - (ftNow-ftInstall) / 100 / 100 / 1000 / 60 / 60 / 24;
-
-            if(daysLeft<15) {
-                CLicenceDlg licenceDlg(daysLeft); // could be two dialogs
-                licenceDlg.DoModal();
-            }
+            
+            CLicenceDlg licenceDlg(daysLeft); // could be two dialogs
+            licenceDlg.DoModal();        
             
             if(!CHECKLICKEY && daysLeft<=0)
                 return FALSE;
