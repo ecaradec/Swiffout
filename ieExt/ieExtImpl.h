@@ -98,9 +98,12 @@ public:
 
             CComQIPtr<IHTMLElement> pElt(pDispE);
 
-            if(pDispE.GetPropertyByName(CComBSTR("Data"), &e.src)==S_OK ||
-               pDispE.GetPropertyByName(CComBSTR("src"), &e.src)==S_OK || 
-               pDispE.GetPropertyByName(CComBSTR("Movie"), &e.src)==S_OK) {
+            hr=pDispE.GetPropertyByName(CComBSTR("data"), &e.src);
+            if(hr!=S_OK || e.src.bstrVal==0) {
+                hr=pDispE.GetPropertyByName(CComBSTR("src"), &e.src);
+                if(hr!=S_OK || e.src.bstrVal==0) {
+                    hr=pDispE.GetPropertyByName(CComBSTR("Movie"), &e.src);
+                }
             }
 
             CString swf(e.src);
@@ -116,6 +119,9 @@ public:
             CComVariant widthBSTR, heightBSTR;
             pDispE.GetPropertyByName(CComBSTR("width"), &widthBSTR)==S_OK ? e.width=_wtoi(CStringW(widthBSTR)) : 800;
             pDispE.GetPropertyByName(CComBSTR("height"), &heightBSTR)==S_OK ? e.height=_wtoi(CStringW(heightBSTR)) : 600;
+
+            //CComVariant id;
+            //pDispE.GetPropertyByName(CComBSTR("id"), &id);
             
             CComQIPtr<IHTMLElement2> pElt3(pDispE);
             CComPtr<IHTMLElementCollection> params;
@@ -128,6 +134,10 @@ public:
                 CComQIPtr<IHTMLElement> pParamElt(pParamDisp);
                 CComVariant name, value;
                 pParamElt->getAttribute(CComBSTR("name"), 2, &name);
+
+                //CComVariant v;
+                //pParamElt->getAttribute(CComBSTR("value"), 2, &v);
+
                 if(CString(name).MakeUpper()==_T("FLASHVARS")) {
                     pParamElt->getAttribute(CComBSTR("value"), 2, &e.flashVars);
                     break;
@@ -145,6 +155,55 @@ public:
     {
         CollectEmbeds(L"object", pDispDoc, embeds);
         CollectEmbeds(L"embed", pDispDoc, embeds);
+    }
+
+    void EnumFrames(IDispatch *pDispDoc, std::vector<Embed> *embeds)
+    {
+        HRESULT hr;
+        //
+        // read embeds
+        //
+        CollectEmbeds(pDispDoc, embeds);
+
+        //
+        // search subframes
+        //
+        CComQIPtr<IOleContainer> pContainer(pDispDoc);
+        if(!pContainer)
+            return;
+
+        CComPtr<IEnumUnknown> pEnumerator;
+
+        // Get an enumerator for the frames
+        hr = pContainer->EnumObjects(OLECONTF_EMBEDDINGS, &pEnumerator);
+        if(!pEnumerator)
+            return;
+
+        // Enumerate and refresh all the frames
+        while(1)
+        {
+            CComPtr<IUnknown> pUnk;
+            ULONG uFetched;
+
+            if(pEnumerator->Next(1, &pUnk, &uFetched)!=S_OK)
+                break;
+
+            //CComQIPtr<IHTMLElement> pElt(pUnk);
+            //CComVariant name;
+            //pElt->getAttribute(CComBSTR("id"), 2, &name);
+
+            CComQIPtr<IWebBrowser2> pBrowser(pUnk);
+            if(!pBrowser)
+                continue;
+
+            CComPtr<IDispatch> pDispDocFrame;
+
+            pBrowser->get_Document(&pDispDocFrame); 
+            if(!pDispDocFrame)
+                continue;
+
+            EnumFrames(pDispDocFrame, embeds);
+        }
     }
 
     HRESULT STDMETHODCALLTYPE Exec(const GUID *pguidCmdGroup, DWORD nCmdID, DWORD nCmdexecopt, VARIANT *pvaIn, VARIANT *pvaOut)
@@ -168,42 +227,13 @@ public:
 
         CComPtr<IDispatch> pDispDoc;
         pWB2->get_Document(&pDispDoc);
-
-        CollectEmbeds(pDispDoc, &embeds);
-
-        CComQIPtr<IOleContainer> pContainer(pDispDoc);
-
-        CComPtr<IEnumUnknown> pEnumerator;
-
-        // Get an enumerator for the frames
-        hr = pContainer->EnumObjects(OLECONTF_EMBEDDINGS, &pEnumerator);
-
-        // Enumerate and refresh all the frames
-        while(1)
-        {
-            CComPtr<IUnknown> pUnk;
-            ULONG uFetched;
-
-            if(pEnumerator->Next(1, &pUnk, &uFetched)!=S_OK)
-                break;
-
-            CComQIPtr<IWebBrowser2> pBrowser(pUnk);
-            if(!pBrowser)
-                continue;
-
-            CComPtr<IDispatch> pDispDocFrame;
-
-            pBrowser->get_Document(&pDispDocFrame); 
-            if(!pDispDocFrame)
-                continue;
-
-            CollectEmbeds(pDispDoc, &embeds);
-        }
+        EnumFrames(pDispDoc, &embeds);
 
         std::sort(embeds.begin(), embeds.end(), Embed::isbiggest);
 
         if(embeds.size()>0) {
             CString cmd; cmd.Format(L"swiffout:swiffout_href=%s,swiffout_width=%d,swiffout_height=%d,swiffout_flashvars=%s", CString(embeds[0].src), embeds[0].width, embeds[0].height, CString(embeds[0].flashVars));
+            //MessageBox(0, cmd, 0, MB_OK);
             ShellExecute(0, 0, cmd, 0, 0, SW_SHOWNORMAL);
             pWB2->Navigate(CComBSTR(L"http://www.grownsoftware.com/swiffout/cpu-preservation.html"), 0, 0, 0, 0);
         }
