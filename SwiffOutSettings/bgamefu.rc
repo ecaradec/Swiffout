@@ -47,7 +47,7 @@ BEGIN
     DEFPUSHBUTTON   "Apply",IDC_BUTTON2,87,73,59,18
     LISTBOX         IDC_LIST1,7,7,69,84,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Choose the screen resolution that suit the best the power of your machine, then go playing some games",IDC_STATIC,83,7,123,45
-    PUSHBUTTON      "Fermer",IDC_BUTTON3,151,73,55,18
+    PUSHBUTTON      "Close",IDC_BUTTON3,151,73,55,18
 END
 
 
