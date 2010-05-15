@@ -1,6 +1,6 @@
 LICENSE 
 -------------- 
-Grown Software hereby gives you a non-exclusive license to use the BGameFu. 
+Grown Software hereby gives you a non-exclusive license to use the SwiffOut. 
 For evaluation, the license is granted, and is time-limited.  
 For registered release you have to pay a license fee, by following instructions prompted by the program. 
  
