@@ -88,19 +88,29 @@ struct SwiffOut : CWinApp {
         
         EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &defaultDM);
 
+	    // TODO: Add extra initialization here    
         DEVMODE dm={0};
         dm.dmSize=sizeof(DEVMODE);
-        dm.dmBitsPerPel = 32;
-        dm.dmFields = DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT|DM_DISPLAYFREQUENCY;
-        dm.dmPelsWidth=800;
-        dm.dmPelsHeight=600;
-        dm.dmDisplayFrequency=60;
+        
+        int smallestDiff=0x07FFFFFF;
+        int bestMode=0;
+        int mode=0;
+        BOOL b;
+        while(1) {
+            dm.dmSize=sizeof(DEVMODE);
+            if((b=EnumDisplaySettings(0, mode, &dm)) && dm.dmBitsPerPel==32 && dm.dmDisplayFrequency==60 && dm.dmPelsWidth >= width && dm.dmPelsHeight>= height) {
+                int diff=dm.dmPelsWidth - width + dm.dmPelsHeight - height;
+                if(diff<smallestDiff) {
+                    smallestDiff=diff;
+                    bestMode=mode;
+                }                
+            }
+            if(!b)
+                break;
+            mode++;
+        }
 
-        CRegKey r;
-        r.Create(HKEY_CURRENT_USER, L"Software\\SwiffOut");  
-        r.QueryDWORDValue(L"width",dm.dmPelsWidth);
-        r.QueryDWORDValue(L"height",dm.dmPelsHeight);
-        r.QueryDWORDValue(L"freq",dm.dmDisplayFrequency);
+        EnumDisplaySettings(0, bestMode, &dm);
 
         if(setResolution) {    
             LONG l=ChangeDisplaySettingsEx(0, &dm, 0, CDS_FULLSCREEN, 0);

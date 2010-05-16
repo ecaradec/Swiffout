@@ -196,7 +196,7 @@ public:
         // bizarrement en mode transparent c'est plus lent, mais ca consomme moins de CPU
         // apres verification : chrome consomme moins, parce qu'il donne moins de CPU a flash.
 		//hr=pSF->put_WMode(L"transparent");
-	    hr=pSF->put_Scale(L"showAll");
+	    hr=pSF->put_Scale(L"exactfit");
 	    hr=pSF->put_BackgroundColor(0x00000000);
 
         CComPtr<IDispatch> pDispSF(pSF);
