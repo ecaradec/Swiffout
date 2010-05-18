@@ -188,7 +188,6 @@ section
     setoutpath "$programfiles\swiffout"
 
     file ..\release\swiffoutrunner.exe
-    file ..\release\swiffoutsettings.exe
 
     ;ieExt
     file ..\release\ieExt.dll
@@ -199,7 +198,6 @@ section
 
     createdirectory "$smprograms\swiffout"
     createshortcut "$smprograms\swiffout\swiffout uninstall.lnk" "$programfiles\swiffout\uninstall.exe"
-    createshortcut "$smprograms\swiffout\swiffout settings.lnk" "$programfiles\swiffout\swiffoutsettings.exe"
     createshortcut "$smprograms\swiffout\swiffout help.lnk" "http://grownsoftware.com/swiffout/help.html" "" "$programfiles\swiffout\swiffoutrunner.exe"
 
     ;store installation folder
