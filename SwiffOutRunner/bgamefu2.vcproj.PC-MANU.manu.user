@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory=""
-				CommandArguments="swiffout:swiffout_href=http://www.miniclip.com/games/final-ninja/pl/finalninja.swf,swiffout_width=550,swiffout_height=400  /setresolution=1"
+				CommandArguments="swiffout:swiffout_href=http://www.miniclip.com/games/final-ninja/pl/finalninja.swf,swiffout_width=550,swiffout_height=400  /setresolution=0"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"

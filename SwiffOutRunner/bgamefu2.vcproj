@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ddraw.lib"
+				AdditionalDependencies="ddraw.lib Shell32.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -136,6 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="ddraw.lib Shell32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -178,6 +179,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\SwiffOutWnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WinMain.cpp"
 				>
 			</File>
@@ -200,6 +205,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SwiffOutWnd.h"
 				>
 			</File>
@@ -210,11 +219,19 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath=".\res\bgamefu.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\swiffoutrunner.rc"
 				>
 			</File>
 		</Filter>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="swiffoutrunner.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

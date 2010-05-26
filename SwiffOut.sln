@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "swiffoutrunner", "SwiffOutRunner\bgamefu2.vcproj", "{7F2619E2-291C-49F6-9892-3DF0F9406114}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "swiffoutsettings", "SwiffOutSettings\bgamefu.vcproj", "{C4D4C0E0-AAC3-45FE-B1DC-1CC858B6F10F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{10517FD6-11D4-4CDA-A223-F23B9836CC1D}"
 	ProjectSection(SolutionItems) = preProject
 		project.txt = project.txt
@@ -23,10 +21,6 @@ Global
 		{7F2619E2-291C-49F6-9892-3DF0F9406114}.Debug|Win32.Build.0 = Debug|Win32
 		{7F2619E2-291C-49F6-9892-3DF0F9406114}.Release|Win32.ActiveCfg = Release|Win32
 		{7F2619E2-291C-49F6-9892-3DF0F9406114}.Release|Win32.Build.0 = Release|Win32
-		{C4D4C0E0-AAC3-45FE-B1DC-1CC858B6F10F}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C4D4C0E0-AAC3-45FE-B1DC-1CC858B6F10F}.Debug|Win32.Build.0 = Debug|Win32
-		{C4D4C0E0-AAC3-45FE-B1DC-1CC858B6F10F}.Release|Win32.ActiveCfg = Release|Win32
-		{C4D4C0E0-AAC3-45FE-B1DC-1CC858B6F10F}.Release|Win32.Build.0 = Release|Win32
 		{187447E7-28B9-4FCE-9ECC-3C8BC7246716}.Debug|Win32.ActiveCfg = Debug|Win32
 		{187447E7-28B9-4FCE-9ECC-3C8BC7246716}.Debug|Win32.Build.0 = Debug|Win32
 		{187447E7-28B9-4FCE-9ECC-3C8BC7246716}.Release|Win32.ActiveCfg = Release|Win32

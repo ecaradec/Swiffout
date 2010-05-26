@@ -1,12 +1,7 @@
+#include "stdafx.h"
+
 #define _WIN32_WINNT 0x0400
 #include "resource.h"
-
-#include <afxwin.h>
-#include <Ole2.h>
-#include <atlbase.h>
-#include <atlcom.h>
-#include <atlstr.h>
-#import "c:\\windows\\system32\\macromed\\flash\\flash.ocx" named_guids no_auto_exclude
 #include "CheckLicKey.h"
 #include "SwiffOutWnd.h"
 #include "LicenceDlg.h"
@@ -19,7 +14,6 @@
 // javascript:location.href="bgamefu:http://armorgames.com/files/games/civilizations-wars-5151.swf"
 struct SwiffOut : CWinApp {
     DEVMODE      defaultDM;
-    bool         setResolution;
     SwiffOutWnd *flashWnd;
 
     BOOL InitInstance() {
@@ -66,7 +60,7 @@ struct SwiffOut : CWinApp {
                 return FALSE;
         }
 
-        setResolution=true;
+        bool setResolution=true;
         if(cmdline.Find(L"/setresolution=0")!=-1)
             setResolution=false;
 
@@ -81,74 +75,18 @@ struct SwiffOut : CWinApp {
         int width=_ttoi(cmdline.Mid(widthIndex+16));
         int height=_ttoi(cmdline.Mid(heightIndex+17));
         flashvars=cmdline.Mid(flashVarsIndex+20);
-
-        memset(&defaultDM,0,sizeof(defaultDM));
-        // set resolution        
-        defaultDM.dmSize=sizeof(DEVMODE);
         
-        EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &defaultDM);
-
-	    // TODO: Add extra initialization here    
-        DEVMODE dm={0};
-        dm.dmSize=sizeof(DEVMODE);
-        
-        int smallestDiff=0x07FFFFFF;
-        int bestMode=0;
-        int mode=0;
-        BOOL b;
-        while(1) {
-            dm.dmSize=sizeof(DEVMODE);
-            if((b=EnumDisplaySettings(0, mode, &dm)) && dm.dmBitsPerPel==32 && dm.dmDisplayFrequency==60 && dm.dmPelsWidth >= width && dm.dmPelsHeight>= height) {
-                int diff=dm.dmPelsWidth - width + dm.dmPelsHeight - height;
-                if(diff<smallestDiff) {
-                    smallestDiff=diff;
-                    bestMode=mode;
-                }                
-            }
-            if(!b)
-                break;
-            mode++;
-        }
-
-        EnumDisplaySettings(0, bestMode, &dm);
-
-        if(setResolution) {    
-            LONG l=ChangeDisplaySettingsEx(0, &dm, 0, CDS_FULLSCREEN, 0);
-        }
-
         flashWnd=new SwiffOutWnd;
         m_pMainWnd=flashWnd;
 
-        float wRatio=(float)dm.dmPelsWidth/width;
-        float hRatio=(float)dm.dmPelsHeight/height;
-
-        float ratio=min(wRatio,hRatio);
-
-        RECT rWin;
-        rWin.top=0;
-        rWin.left=0;
-        rWin.right=dm.dmPelsWidth;
-        rWin.bottom=dm.dmPelsHeight;
-
-        int diffH=dm.dmPelsHeight-height*ratio;
-        int diffW=dm.dmPelsWidth-width*ratio;
-
-        RECT rSwf;
-        rSwf.top=diffH/2;
-        rSwf.left=diffW/2;
-        rSwf.right=width*ratio+diffW/2;
-        rSwf.bottom=height*ratio+diffH/2;
-
-        flashWnd->Create((CHAR*)swf.GetString(), (CHAR*)flashvars.GetString(), rWin, rSwf);
+        flashWnd->Create((CHAR*)swf.GetString(), (CHAR*)flashvars.GetString(), width, height, setResolution);
+        flashWnd->m_cmdLine=cmdline;
         
         return TRUE;
     }
     int ExitInstance()
     {
         delete flashWnd;
-
-        if(setResolution)
-            ChangeDisplaySettingsEx(0, &defaultDM, 0, CDS_FULLSCREEN, 0);
         
         OleUninitialize();
         return 0;
