@@ -294,7 +294,7 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height, bool
 
     float ratio=min(wRatio,hRatio);
 
-    RECT rWin;
+    CRect rWin;
     rWin.top=0;
     rWin.left=0;
     rWin.right=dm.dmPelsWidth;
@@ -324,12 +324,20 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height, bool
     //
 
     CreateEx(WS_EX_TOPMOST, AfxRegisterWndClass(0), L"SwiffOutRunner", WS_SYSMENU|WS_MINIMIZEBOX, 0, 0, rWin.right-rWin.left, rWin.bottom-rWin.top, 0, 0);
+
+    CRect rClient;
+    GetClientRect(&rClient);
+
+    m_borderWidth=rWin.Width()-rClient.Width();
+    m_borderHeight=rWin.Height()-rClient.Height();
+        
+
     if(m_fullscreen) {
         ModifyStyle(WS_CAPTION,WS_POPUP);
         SetWindowPos(0,0,0,m_rWin.right-m_rWin.left,m_rWin.bottom-m_rWin.top,SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOZORDER|SWP_SHOWWINDOW);
     } else {
-        CenterWindow();
-        SetWindowPos(&CWnd::wndNoTopMost,0,0,m_rWin.right-m_rWin.left,m_rWin.bottom-m_rWin.top,SWP_NOZORDER|SWP_SHOWWINDOW|SWP_NOMOVE);
+        CenterWindow();        
+        SetWindowPos(&CWnd::wndNoTopMost,0,0,m_rWin.right-m_rWin.left+m_borderWidth,m_rWin.bottom-m_rWin.top+m_borderHeight,SWP_NOZORDER|SWP_SHOWWINDOW|SWP_NOMOVE);
     }
 
 
@@ -392,7 +400,7 @@ void SwiffOutWnd::SetFullscreen(bool b) {
         style|=WS_CAPTION;
         style&=~WS_POPUP;
         SetWindowLong(GetHWND(), GWL_STYLE, style);
-        SetWindowPos(&CWnd::wndNoTopMost,0,0,m_rWin.right-m_rWin.left+10,m_rWin.bottom-m_rWin.top+20,SWP_FRAMECHANGED|SWP_NOMOVE);
+        SetWindowPos(&CWnd::wndNoTopMost,0,0,m_rWin.right-m_rWin.left+m_borderWidth,m_rWin.bottom-m_rWin.top+m_borderHeight,SWP_FRAMECHANGED|SWP_NOMOVE);
     }
 }
 

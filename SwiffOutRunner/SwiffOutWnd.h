@@ -34,6 +34,8 @@ struct SwiffOutWnd : CWnd,
     CRegKey                                 m_regkey;
     CString                                 m_cmdLine;
     
+    int m_borderWidth;
+    int m_borderHeight;
 
     DECLARE_MESSAGE_MAP()
 public:
