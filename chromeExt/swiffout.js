@@ -17,7 +17,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
                 }
             }
 
-            v=v.replace(/&amp;/g,"&");
+            if(v)
+                v=v.replace(/&amp;/g,"&");
             return v;
         }
 
@@ -40,7 +41,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
                 }
             }
 
-            v=v.replace(/&amp;/g,"&").replace(/&gt;/g,">").replace(/&lt;/g,"<");
+            if(v)
+                v=v.replace(/&amp;/g,"&").replace(/&gt;/g,">").replace(/&lt;/g,"<");
             return v;
         }
 
