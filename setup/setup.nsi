@@ -184,6 +184,7 @@ FunctionEnd
 ;--------------------------------
 ;installer sections
 
+
 section
     setoutpath "$programfiles\swiffout"
 
@@ -191,10 +192,18 @@ section
 
     ;ieExt
     file ..\release\ieExt.dll
+    RegDLL  "$programfiles\swiffout\ieExt.dll"
+
     ; firefoxExt
+    RMDir /r "$programfiles\swiffout\firefoxExt" ; to clean folder modification time
     file /r ..\firefoxExt
+    writeregstr hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com" "$programfiles\swiffout\firefoxExt"
+
     ; chromeExt
     file ..\chromeExt.crx
+
+    writeregstr hklm "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "path" "$programfiles\swiffout\chromeExt.crx"
+    writeregstr hklm "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "version" ${chromeExtVersion}
 
     createdirectory "$smprograms\swiffout"
     createshortcut "$smprograms\swiffout\swiffout uninstall.lnk" "$programfiles\swiffout\uninstall.exe"
@@ -226,19 +235,6 @@ section
 
     ; open help
     execshell "open" "http://grownsoftware.com/swiffout/help.html"
-sectionend
-
-section "ieExt" ieExt
-    RegDLL  "$programfiles\swiffout\ieExt.dll"
-sectionend
-
-section "firefoxExt" firefoxExt
-    writeregstr hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com" "$programfiles\swiffout\firefoxExt"
-sectionend
-
-section "chromeExt" chromeExt
-    writeregstr hklm "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "path" "$programfiles\swiffout\chromeExt.crx"
-    writeregstr hklm "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "version" "1.0"
 sectionend
 
 ;--------------------------------

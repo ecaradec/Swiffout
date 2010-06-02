@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#include "..\versionNb.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -104,8 +105,8 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION _FILEVERSION_
+ PRODUCTVERSION _PRODUCTVERSION_
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -122,12 +123,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "GrownSoftware"
             VALUE "FileDescription", "SwiffOut Runner"
-            VALUE "FileVersion", "1.0.0"
+            VALUE "FileVersion", _FILEVERSIONSTR_
             VALUE "InternalName", "swiffoutrunner.exe"
             VALUE "LegalCopyright", "(c) GrownSoftware.  All rights reserved."
             VALUE "OriginalFilename", "swiffoutrunner.exe"
             VALUE "ProductName", "SwiffOut"
-            VALUE "ProductVersion", "1.0.0"
+            VALUE "ProductVersion", _PRODUCTVERSIONSTR_
         END
     END
     BLOCK "VarFileInfo"
