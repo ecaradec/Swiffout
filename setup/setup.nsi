@@ -159,7 +159,7 @@ FunctionEnd
     outfile "..\SwiffOut Setup.exe"
 
     ;request application privileges for windows vista
-    requestexecutionlevel user
+    requestexecutionlevel highest
 
 ;--------------------------------
 ;interface settings
