@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="7,00"
 	Name="ieExt"
 	ProjectGUID="{187447E7-28B9-4FCE-9ECC-3C8BC7246716}"
 	RootNamespace="ieExt"

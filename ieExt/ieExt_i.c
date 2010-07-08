@@ -1,14 +1,15 @@
 
+#pragma warning( disable: 4049 )  /* more than 64k source lines */
 
 /* this ALWAYS GENERATED file contains the IIDs and CLSIDs */
 
 /* link this file in with the server and any clients */
 
 
- /* File created by MIDL compiler version 6.00.0366 */
-/* at Mon Apr 26 09:08:45 2010
+ /* File created by MIDL compiler version 6.00.0347 */
+/* at Thu Jul 08 00:15:28 2010
  */
-/* Compiler settings for .\ieExt.idl:
+/* Compiler settings for ieExt.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)
     protocol : dce , ms_ext, c_ext
     error checks: allocation ref bounds_check enum stub_data 
@@ -18,8 +19,7 @@
 */
 //@@MIDL_FILE_HEADING(  )
 
-#pragma warning( disable: 4049 )  /* more than 64k source lines */
-
+#if !defined(_M_IA64) && !defined(_M_AMD64)
 
 #ifdef __cplusplus
 extern "C"{
@@ -82,4 +82,6 @@ MIDL_DEFINE_GUID(CLSID, CLSID_ieExtImpl,0x9BA9E4C9,0x1147,0x4C81,0xB4,0x5E,0xDF,
 #endif
 
 
+
+#endif /* !defined(_M_IA64) && !defined(_M_AMD64)*/
 

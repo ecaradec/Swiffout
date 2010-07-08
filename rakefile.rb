@@ -24,7 +24,7 @@ task :engine, [:version] do |t,args|
         f << "#define _RELEASEDATESTR_ \"#{Time.now.strftime("%d %b %y")}\"\n"        
     end
 
-    sh '"c:\Program Files\Microsoft Visual Studio 8\Common7\IDE\devenv.com" swiffout.sln /Build Release'
+    sh '"C:\Program Files\Microsoft Visual Studio .NET 2002\Common7\IDE\devenv.exe" swiffout.sln /Build Release'
 end
 
 task :firefoxExt, [:version] do |t,args|
