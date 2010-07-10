@@ -410,7 +410,10 @@ void SwiffOutWnd::SetFullscreen(bool b) {
 void SwiffOutWnd::OnPaint() {
     PAINTSTRUCT ps={0};
     CDC *pDC=BeginPaint(&ps);
-    pDC->FillSolidRect(&m_rWin,0);
+
+    CRect r;
+    GetClientRect(&r);
+    pDC->FillSolidRect(&r,0xFFFFFF);
     
     OleDraw(pVO, DVASPECT_CONTENT, pDC->GetSafeHdc(), &m_rSwf);
     EndPaint(&ps);

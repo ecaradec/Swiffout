@@ -1,24 +1,29 @@
-
 struct CLicenceDlg : CDialog {
     enum { IDD = IDD_LICENCE_DIALOG };
+    CFont f;
     CLicenceDlg(int daysLeft) : CDialog(IDD) {
         m_daysLeft=daysLeft;
+        f.CreateFont(80,0,0,0,0,0,0,0,0,0,0,0,0,L"Arial");
     }
     BOOL OnInitDialog() {
-        if(m_daysLeft <= 0) {
-            CString daysLeftStr; daysLeftStr.Format(L"%d", m_daysLeft);
-            GetDlgItem(IDC_STATIC)->SetWindowText(L"Oh no !!! The trial period for SwiffOut has ended. "
-                                                  L"As a faithful SwiffOut user, you should consider buying a licence. "
-                                                  L"It'll allow you to skip this annoooying dialog and enjoy SwiffOut for as long as you want\n"
-                                                  L"Now BUY a licence and enjoy a great game.");
+        CString daysLeftStr; daysLeftStr.Format(L"%d", m_daysLeft);
+        GetDlgItem(IDC_TRIAL)->SetWindowText(daysLeftStr);
+        
+        
+        GetDlgItem(IDC_TRIAL)->SetFont(&f);
 
-            SetWindowPos(0,0,0,510,175,SWP_NOMOVE);
+
+        if(m_daysLeft <= 0) {            
+            GetDlgItem(IDC_STATIC)->SetWindowText(L"Oh no !!! You used all your tries on websites that aren't partners of SwiffOut.\n\n"
+                                                  L"Don't worry, you can still play on SwiffOutGames.com unlimited, however as a faithful SwiffOut user, you should consider buying a licence : it is cheap, "
+                                                  L"it'll allow you to use SwiffOut unlimited everywhere and will support future developpements.\n\n"
+                                                  L"Now click BUY to play this game fullscreen or go to SwiffOutGames.com.");
+            SetWindowPos(0,0,0,510,205,SWP_NOMOVE);
         } else {
-            CString daysLeftStr; daysLeftStr.Format(L"%d", m_daysLeft);
-            GetDlgItem(IDC_STATIC)->SetWindowText(L"You only have "+daysLeftStr+L" days left on your trial period. "
-                                                  L"If you like SwiffOut, you should consider buying a licence. "
-                                                  L"It'll allow you to skip this annoooying dialog and enjoy SwiffOut for as long as you want.\n\n"
-                                                  L"Now click BUY or SKIP and enjoy a great game.");
+            GetDlgItem(IDC_STATIC)->SetWindowText(L"Playing on websites that aren't partners of SwiffOut is a feature of SwiffOut Extended.\n\nDon't worry, you still have "+daysLeftStr+L" remaining tries. "
+                                                  L"As a faithful SwiffOut user, you should consider buying a licence : it is cheap, "
+                                                  L"will allow you to use SwiffOut unlimited everywhere and will support future developpements.\n\n"
+                                                  L"Now click BUY to get a license or SKIP and enjoy a great game.");
         }
 
         return CDialog::OnInitDialog();

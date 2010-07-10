@@ -9,7 +9,7 @@
 #define IDC_LIC1                        1001
 #define IDC_BEST_RESOLUTION_CHECK       1008
 #define IDC_COMBO1                      1010
-
+#define IDC_TRIAL                       1012
 #define ID_TOGGLE_FULLSCREEN            40001
 #define ID_ENABLE_ESC                   40002
 #define ID_START_FULLSCREEN             40003
@@ -25,7 +25,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40508
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

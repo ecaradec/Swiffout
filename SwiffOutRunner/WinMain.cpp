@@ -39,41 +39,36 @@ struct SwiffOut : CWinApp {
         int widthIndex=cmdline.Find(L",swiffout_width=");
         int heightIndex=cmdline.Find(L",swiffout_height=");
         int flashVarsIndex=cmdline.Find(L",swiffout_flashvars=");
+        if(hrefIndex==-1 || widthIndex==-1 || heightIndex==-1 || flashVarsIndex==-1)
+        {
+            MessageBox(0, L"Oups, bad parameters !! SwiffOut didn't recognized parameters given.\nIt might be a website error or a SwiffOut error.\nTry some other games and contact me at contact@grownsoftware.com if it still doesn't work.", L"SwiffOut Error", MB_OK|MB_ICONEXCLAMATION);
+            return FALSE;
+        }
+
         
         swf=cmdline.Mid(hrefIndex+14, widthIndex-hrefIndex-14);    
         int width=_ttoi(cmdline.Mid(widthIndex+16));
         int height=_ttoi(cmdline.Mid(heightIndex+17));
         flashvars=cmdline.Mid(flashVarsIndex+20);
 
-        //CreateDialog(0, MAKEINTRESOURCE(IDD_LICENCE_DIALOG), 0, (DLGPROC)DefDlgProc);
-		if(!CHECKLICKEY || swf.Find("http://swiffoutgames.com/")!=0) {
-            CString dateStr;
+		if(!CHECKLICKEY && swf.Find("http://swiffoutgames.com/")!=0) {
             CRegKey k;
             k.Create(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\{1F2285D5-05F4-40ab-BFC2-BF3B9B7B1F50}");
-            ULONG len=256;
-            k.QueryStringValue(0, dateStr.GetBufferSetLength(len), &len); dateStr.ReleaseBuffer();
-        
+			DWORD nbTry=10^0x53;
+			k.QueryDWORDValue(L"try", nbTry);
+            nbTry^=0x53;
+            if(nbTry>10)
+                nbTry=0;
+            if(nbTry>=1) {
+                nbTry--;
+                k.SetDWORDValue(L"try",nbTry^0x53);
+            }
 
-            unsigned __int64 ftInstall=0;
-            SYSTEMTIME stInstall={0};
-            stInstall.wYear=_ttoi(dateStr.Mid(4,4));
-            stInstall.wMonth=_ttoi(dateStr.Mid(2,2));
-            stInstall.wDay=_ttoi(dateStr.Mid(0,2));
-
-            SystemTimeToFileTime(&stInstall,(FILETIME*)&ftInstall);
-
-            unsigned __int64 ftNow=0;
-            SYSTEMTIME stNow;
-            GetSystemTime(&stNow);
-            SystemTimeToFileTime(&stNow,(FILETIME*)&ftNow);
-
-            int trialPeriodLength=30;
-            __int64 daysLeft=trialPeriodLength - (ftNow-ftInstall) / 100 / 100 / 1000 / 60 / 60 / 24;
+            CLicenceDlg licenceDlg(nbTry); // could be two dialogs
+            INT_PTR r=licenceDlg.DoModal();        
             
-            CLicenceDlg licenceDlg(daysLeft); // could be two dialogs
-            licenceDlg.DoModal();        
-            
-            if(!CHECKLICKEY && daysLeft<=0)
+            bool allowed = checkSwiffOutKey();
+            if(r==2 || (!allowed && nbTry<=0))
                 return FALSE;
         }
         

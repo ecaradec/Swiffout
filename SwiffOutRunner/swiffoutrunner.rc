@@ -1,7 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-#include "..\versionNb.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -53,18 +52,21 @@ END
 // Dialog
 //
 
-IDD_LICENCE_DIALOG DIALOGEX 0, 0, 338, 118
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+IDD_LICENCE_DIALOG DIALOGEX 0, 0, 338, 129
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | 
+    WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "SwiffOut - Licence"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Buy licence",IDC_BUY_LICENCE,8,50,74,15
-    PUSHBUTTON      "Confirm",IDC_CONFIRM,270,70,60,15
-    LTEXT           "",IDC_STATIC,9,12,323,35
-    EDITTEXT        IDC_LIC1,8,70,259,14
-    PUSHBUTTON      "Skip",IDC_SKIP,269,99,64,15
-    GROUPBOX        "Licence",IDC_STATIC,4,1,330,88
+    DEFPUSHBUTTON   "Buy licence",IDC_BUY_LICENCE,9,72,75,15
+    PUSHBUTTON      "Confirm",IDC_CONFIRM,271,90,60,15
+    LTEXT           "",IDC_STATIC,89,12,237,76
+    EDITTEXT        IDC_LIC1,9,90,259,14
+    PUSHBUTTON      "Skip",IDC_SKIP,270,111,64,15
+    GROUPBOX        "Licence",IDC_STATIC,4,1,330,107
+    CTEXT           "5",IDC_TRIAL,13,25,69,46
+    CTEXT           "Remaining\nnon partner tries",IDC_STATIC,13,10,68,19
 END
 
 
@@ -81,7 +83,7 @@ BEGIN
         LEFTMARGIN, 4
         RIGHTMARGIN, 334
         TOPMARGIN, 5
-        BOTTOMMARGIN, 115
+        BOTTOMMARGIN, 126
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -105,8 +107,8 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION _FILEVERSION_
- PRODUCTVERSION _PRODUCTVERSION_
+ FILEVERSION 1,2,5,0
+ PRODUCTVERSION 1,2,5,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -123,12 +125,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "GrownSoftware"
             VALUE "FileDescription", "SwiffOut Runner"
-            VALUE "FileVersion", _FILEVERSIONSTR_
+            VALUE "FileVersion", "1.2.5.0"
             VALUE "InternalName", "swiffoutrunner.exe"
             VALUE "LegalCopyright", "(c) GrownSoftware.  All rights reserved."
             VALUE "OriginalFilename", "swiffoutrunner.exe"
             VALUE "ProductName", "SwiffOut"
-            VALUE "ProductVersion", _PRODUCTVERSIONSTR_
+            VALUE "ProductVersion", "1.2.5.0"
         END
     END
     BLOCK "VarFileInfo"
