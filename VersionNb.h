@@ -2,4 +2,4 @@
 #define _FILEVERSIONSTR_ "1.2.5.0"
 #define _PRODUCTVERSION_ 1,2,5,0
 #define _FILEVERSION_ 1,2,5,0
-#define _RELEASEDATESTR_ "02 Jun 10"
+#define _RELEASEDATESTR_ "10 Jul 10"
