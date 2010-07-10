@@ -28,8 +28,25 @@ struct SwiffOut : CWinApp {
         //p.CoCreateInstance(clsid);
         //p.CreateInstance(
 
+
+        bool setResolution=true;
+        if(cmdline.Find(L"/setresolution=0")!=-1)
+            setResolution=false;
+
+        CStringA swf, flashvars;
+        
+        int hrefIndex=cmdline.Find(L"swiffout_href=");
+        int widthIndex=cmdline.Find(L",swiffout_width=");
+        int heightIndex=cmdline.Find(L",swiffout_height=");
+        int flashVarsIndex=cmdline.Find(L",swiffout_flashvars=");
+        
+        swf=cmdline.Mid(hrefIndex+14, widthIndex-hrefIndex-14);    
+        int width=_ttoi(cmdline.Mid(widthIndex+16));
+        int height=_ttoi(cmdline.Mid(heightIndex+17));
+        flashvars=cmdline.Mid(flashVarsIndex+20);
+
         //CreateDialog(0, MAKEINTRESOURCE(IDD_LICENCE_DIALOG), 0, (DLGPROC)DefDlgProc);
-        if(!CHECKLICKEY) {
+		if(!CHECKLICKEY || swf.Find("http://swiffoutgames.com/")!=0) {
             CString dateStr;
             CRegKey k;
             k.Create(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\{1F2285D5-05F4-40ab-BFC2-BF3B9B7B1F50}");
@@ -59,22 +76,6 @@ struct SwiffOut : CWinApp {
             if(!CHECKLICKEY && daysLeft<=0)
                 return FALSE;
         }
-
-        bool setResolution=true;
-        if(cmdline.Find(L"/setresolution=0")!=-1)
-            setResolution=false;
-
-        CStringA swf, flashvars;
-        
-        int hrefIndex=cmdline.Find(L"swiffout_href=");
-        int widthIndex=cmdline.Find(L",swiffout_width=");
-        int heightIndex=cmdline.Find(L",swiffout_height=");
-        int flashVarsIndex=cmdline.Find(L",swiffout_flashvars=");
-        
-        swf=cmdline.Mid(hrefIndex+14, widthIndex-hrefIndex-14);    
-        int width=_ttoi(cmdline.Mid(widthIndex+16));
-        int height=_ttoi(cmdline.Mid(heightIndex+17));
-        flashvars=cmdline.Mid(flashVarsIndex+20);
         
         flashWnd=new SwiffOutWnd;
         m_pMainWnd=flashWnd;
