@@ -413,7 +413,7 @@ void SwiffOutWnd::OnPaint() {
 
     CRect r;
     GetClientRect(&r);
-    pDC->FillSolidRect(&r,0xFFFFFF);
+    pDC->FillSolidRect(&r,0x000000);
     
     OleDraw(pVO, DVASPECT_CONTENT, pDC->GetSafeHdc(), &m_rSwf);
     EndPaint(&ps);
