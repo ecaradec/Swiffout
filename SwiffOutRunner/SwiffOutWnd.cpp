@@ -5,7 +5,7 @@
 
 // host should implement direct draw for better performances
 
-// swiffout:swiffout_href=http://www.miniclip.com/games/final-ninja/pl/finalninja.swf,swiffout_width=550,swiffout_height=400  /setresolution=0
+// swiffout:swiffout_href=http://www.miniclip.com/games/final-ninja/pl/finalninja.swf,swiffout_width=550,swiffout_height=400,flashvars=undefined  /setresolution=0
 // swiffout:swiffout_href=http://cdn.nitrome.com/games/bcbowcontest/bcbowcontest.swf,swiffout_width=550,swiffout_height=400,flashvars=undefined  /setresolution=0
 
 //declare required GUIDs
