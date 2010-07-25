@@ -251,23 +251,26 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     memset(&dm,0,sizeof(dm));
     dm.dmSize=sizeof(DEVMODE);
     
+    int resolutionNb=0;
     int resolutionCmd=ID_FIRST_RESOLUTION;
     int smallestDiff=0x07FFFFFF;
+    int displayFreq=0;
     int bestMode=0;
     int mode=0;
     BOOL b;
     while(1) {
         dm.dmSize=sizeof(DEVMODE);
-        if((b=EnumDisplaySettings(0, mode, &dm)) && dm.dmBitsPerPel==32 && dm.dmDisplayFrequency==60) {
+        if((b=EnumDisplaySettings(0, mode, &dm)) && dm.dmBitsPerPel==32) {
 
             CString str;
-            str.Format(L"%dx%d", dm.dmPelsWidth, dm.dmPelsHeight);
-            resMenu.AppendMenu(MF_UNCHECKED, resolutionCmd, str);
+            //str.Format(L"%dx%d", dm.dmPelsWidth, dm.dmPelsHeight);
+            //resMenu.AppendMenu(MF_UNCHECKED, resolutionCmd, str);
+            resolutionNb++;
             resolutionCmd++;
 
-            if( dm.dmPelsWidth >= width && dm.dmPelsHeight>= height ) {
+            if( dm.dmPelsWidth >= width && dm.dmPelsHeight>= height) {
                 int diff=dm.dmPelsWidth - width + dm.dmPelsHeight - height;
-                if(diff<smallestDiff) {
+                if(diff<smallestDiff || (diff==smallestDiff && dm.dmDisplayFrequency>displayFreq)) {
                     smallestDiff=diff;
                     bestMode=mode;
                 }
