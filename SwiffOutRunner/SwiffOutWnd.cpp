@@ -211,7 +211,7 @@ void SwiffOutWnd::Exit()
     return ::DefWindowProc(hwnd,msg,wparam,lparam);
 }*/
 
-void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height, bool fullscreen) {
+void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     //
     // read registry
     //
@@ -277,7 +277,6 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height, bool
             break;
         mode++;
     }
-
 
     EnumDisplaySettings(0, bestMode, &dm);
 
@@ -378,8 +377,6 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height, bool
     hr=pSF->Play();
 
     SetCapture(TRUE);
-
-    fullscreen=true;
 }
 
 void SwiffOutWnd::SetFullscreen(bool b) {

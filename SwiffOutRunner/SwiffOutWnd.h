@@ -49,7 +49,7 @@ public:
     void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
     /*static LRESULT __stdcall FlashWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);*/
 
-    void Create(CHAR *swf, CHAR *flashVars, int width, int height, bool fullscreen);
+    void Create(CHAR *swf, CHAR *flashVars, int width, int height);
     void SetFullscreen(bool b);
     void Exit();
 

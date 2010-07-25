@@ -27,12 +27,7 @@ struct SwiffOut : CWinApp {
         //CLSIDFromString(L"{9BA9E4C9-1147-4C81-B45E-DF966D095543}", &clsid);
         //p.CoCreateInstance(clsid);
         //p.CreateInstance(
-
-
-        bool setResolution=true;
-        if(cmdline.Find(L"/setresolution=0")!=-1)
-            setResolution=false;
-
+        
         CStringA swf, flashvars;
         
         int hrefIndex=cmdline.Find(L"swiffout_href=");
@@ -75,7 +70,7 @@ struct SwiffOut : CWinApp {
         flashWnd=new SwiffOutWnd;
         m_pMainWnd=flashWnd;
 
-        flashWnd->Create((CHAR*)swf.GetString(), (CHAR*)flashvars.GetString(), width, height, setResolution);
+        flashWnd->Create((CHAR*)swf.GetString(), (CHAR*)flashvars.GetString(), width, height);
         flashWnd->m_cmdLine=cmdline;
         
         return TRUE;
