@@ -211,6 +211,36 @@ void SwiffOutWnd::Exit()
     return ::DefWindowProc(hwnd,msg,wparam,lparam);
 }*/
 
+CString GetStringFromHRESULT(HRESULT hr) {
+    CString s;
+    LPVOID lpMsgBuf;
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
+                    NULL,
+                    GetLastError(),
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+                    (LPTSTR) &lpMsgBuf,
+                    0,
+                    NULL);
+
+    CString tmp((TCHAR*)lpMsgBuf);
+    LocalFree( lpMsgBuf );
+    return tmp;
+}
+
+HWND g_mainHWND=0;
+bool QAssertHR(HRESULT hr, char *file, int line) {
+    if(FAILED(hr)){
+        CString tmp(GetStringFromHRESULT(hr));
+        CString msg;
+        msg.Format(_T("Line : %s(%d)\n\nReason : (%x) %s\nThe application will close."), CString(file), line, hr, tmp);
+        MessageBox(g_mainHWND, msg, _T("SwiffOut Initialisation Failed"), MB_OK|MB_ICONERROR);
+        return false;
+    }
+    return true;
+}
+
+#define QASSERT_HR(expr) QAssertHR((expr),__FILE__, __LINE__)
+
 void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     //
     // read registry
@@ -326,6 +356,7 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     //
 
     CreateEx(WS_EX_TOPMOST, AfxRegisterWndClass(0), L"SwiffOutRunner", WS_SYSMENU|WS_MINIMIZEBOX, 0, 0, rWin.right-rWin.left, rWin.bottom-rWin.top, 0, 0);
+    g_mainHWND=GetSafeHwnd();
 
     CRect rClient;
     GetClientRect(&rClient);
@@ -343,8 +374,15 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     }
 
 
-    hr=OleCreate(ShockwaveFlashObjects::CLSID_ShockwaveFlash, IID_IOleObject, OLERENDER_DRAW, 0, (IOleClientSite *)this, (IStorage *)this, (void **)&pOO);
-    hr=OleSetContainedObject(pOO, TRUE);        
+    if(!QASSERT_HR(OleCreate(ShockwaveFlashObjects::CLSID_ShockwaveFlash, IID_IOleObject, OLERENDER_DRAW, 0, (IOleClientSite *)this, (IStorage *)this, (void **)&pOO))) {
+        PostQuitMessage(0);
+        return;
+    }
+
+    if(!QASSERT_HR(OleSetContainedObject(pOO, TRUE))) {
+        PostQuitMessage(0);
+        return;
+    }
 
     pVOE=pOO;
 
@@ -360,24 +398,48 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     // apres verification : chrome consomme moins, parce qu'il donne moins de CPU a flash.
 	//hr=pSF->put_WMode(L"transparent");
     //hr=pSF->put_Scale(L"exactfit");
-    hr=pSF->put_Scale(L"showAll");
-    hr=pSF->put_BackgroundColor(0x00000000);
+    if(!QASSERT_HR(pSF->put_Scale(L"showAll"))) {
+        PostQuitMessage(0);
+        return;
+    }
+
+    if(!QASSERT_HR(pSF->put_BackgroundColor(0x00000000))) {
+        PostQuitMessage(0);
+        return;
+    }
 
     CComPtr<IDispatch> pDispSF(pSF);
     pDispSF.PutPropertyByName(L"flashVars", &CComVariant(flashVars));
 
-    hr=pOO->DoVerb(OLEIVERB_SHOW, NULL, (IOleClientSite *)this, 0, NULL, NULL);
-    
-    pOIPO->SetObjectRects(&rSwf, &rSwf);
-    pOIPOW->SetObjectRects(&rSwf, &rSwf);
+    if(!QASSERT_HR(pOO->DoVerb(OLEIVERB_SHOW, NULL, (IOleClientSite *)this, 0, NULL, NULL))) {
+        PostQuitMessage(0);
+        return;
+    }
+
+    if(!QASSERT_HR(pOIPO->SetObjectRects(&rSwf, &rSwf))) {
+        PostQuitMessage(0);
+        return;
+    }
+
+    if(!QASSERT_HR(pOIPOW->SetObjectRects(&rSwf, &rSwf))) {
+        PostQuitMessage(0);
+        return;
+    }
 
     HWND flashHWND;
     pOIPO->GetWindow(&flashHWND);
     clss=new FlashWndSubclass;
     clss->SubclassWindow(flashHWND);
     
-    hr=pSF->LoadMovie(0, _bstr_t(swf));
-    hr=pSF->Play();
+    if(!QASSERT_HR(pSF->LoadMovie(0, _bstr_t(swf)))) {
+        PostQuitMessage(0);
+        return;
+    }
+    
+    if(!QASSERT_HR(pSF->Play())) {
+        PostQuitMessage(0);
+        return;
+    }
 
     SetCapture(TRUE);
 }
