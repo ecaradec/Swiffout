@@ -207,7 +207,7 @@ section
 
     createdirectory "$smprograms\swiffout"
     createshortcut "$smprograms\swiffout\swiffout uninstall.lnk" "$programfiles\swiffout\uninstall.exe"
-    createshortcut "$smprograms\swiffout\swiffout help.lnk" "http://grownsoftware.com/swiffout/help.html" "" "$programfiles\swiffout\swiffoutrunner.exe"
+    createshortcut "$smprograms\swiffout\swiffout help.lnk" "http://swiffout.com/help.html" "" "$programfiles\swiffout\swiffoutrunner.exe"
 
     ;store installation folder
     writeregstr hkcr "swiffout" "url protocol" ""
@@ -234,7 +234,7 @@ section
     keyexist:
 
     ; open help
-    execshell "open" "http://grownsoftware.com/swiffout/help.html"
+    execshell "open" "http://swiffout/welcome.html"
 sectionend
 
 ;--------------------------------
