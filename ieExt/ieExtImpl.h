@@ -235,7 +235,7 @@ public:
             CString cmd; cmd.Format(L"swiffout:swiffout_href=%s,swiffout_width=%d,swiffout_height=%d,swiffout_flashvars=%s", CString(embeds[0].src), embeds[0].width, embeds[0].height, CString(embeds[0].flashVars));
             //MessageBox(0, cmd, 0, MB_OK);
             ShellExecute(0, 0, cmd, 0, 0, SW_SHOWNORMAL);
-            pWB2->Navigate(CComBSTR(L"http://www.grownsoftware.com/swiffout/cpu-preservation.html"), 0, 0, 0, 0);
+            pWB2->Navigate(CComBSTR(L"http://swiffout.com/cpu-preservation.html"), 0, 0, 0, 0);
         }
 
         return S_OK;

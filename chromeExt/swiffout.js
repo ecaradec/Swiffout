@@ -79,7 +79,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
         window.location="swiffout:swiffout_href="+request.src+",swiffout_width="+request.width+",swiffout_height="+request.height+",swiffout_flashvars="+request.flashVars;
         window.setTimeout(function() {
-           window.location="http://www.grownsoftware.com/swiffout/cpu-preservation.html";
+           window.location="http://swiffout.com/cpu-preservation.html";
         }, 1000);
 
         //console.log("swiffout:swiffout_href="+request.src+",swiffout_width="+request.width+",swiffout_height="+request.height);

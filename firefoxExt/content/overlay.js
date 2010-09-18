@@ -136,7 +136,7 @@ swiffout = {
         gBrowser.contentDocument.location.href="swiffout:swiffout_href="+swfList[0].src+",swiffout_width="+swfList[0].width+",swiffout_height="+swfList[0].height+",swiffout_flashvars="+swfList[0].flashvars;
 
         setTimeout(function() {
-            gBrowser.contentDocument.location.href="http://grownsoftware.com/swiffout/cpu-preservation.html";
+            gBrowser.contentDocument.location.href="http://swiffout.com/cpu-preservation.html";
         }, 100);
     }
 };
