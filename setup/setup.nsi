@@ -234,7 +234,7 @@ section
     keyexist:
 
     ; open help
-    execshell "open" "http://swiffout/welcome.html"
+    execshell "open" "http://swiffout.com/welcome.html"
 sectionend
 
 ;--------------------------------
