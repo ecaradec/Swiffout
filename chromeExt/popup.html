@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <style>
+            body { overflow: hidden; }
+            select { max-width: 750px; }
+        </style>
+
+    </head>
+    <body>
+        <div id='msg' style='width: 200px;'>Searching flash games...</div>
+        <div id='swfListDiv' style='display: none;'>
+            <button style='width:100%'>guess</button>
+            <select id='swflist' multiple >
+            <select>
+        </div>
+        <script>
+            var background = chrome.extension.getBackgroundPage();
+
+            background.findSWF(function(swfList){
+                if(swfList.length==1) {
+                    background.runSWF(0);
+                    window.close();
+                    return;
+                }
+
+                var html="";
+                for(var i in swfList) {
+                    html+='<option>'+swfList[i].src+'</option>';
+                }
+                swflist.innerHTML=html;
+                swflist.size=swfList.length;
+                swfListDiv.style.display="block";
+                msg.style.display="none";
+            });
+            swflist.addEventListener("change", function(e) {
+                background.runSWF(e.srcElement.selectedIndex);
+                window.close();
+            });
+        </script>
+    </body>
+</html>

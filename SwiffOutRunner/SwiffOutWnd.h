@@ -9,7 +9,8 @@ struct SwiffOutWnd : CWnd,
                   IOleInPlaceSiteWindowless,
                   IOleInPlaceFrame,
                   IStorage,
-                  ShockwaveFlashObjects::IServiceProvider 
+                  ShockwaveFlashObjects::IServiceProvider,
+                  ShockwaveFlashObjects::_IShockwaveFlashEvents
 {
     CComQIPtr<ShockwaveFlashObjects::IShockwaveFlash> pSF;
     CComPtr<IOleObject>                     pOO;
@@ -17,8 +18,8 @@ struct SwiffOutWnd : CWnd,
     CComQIPtr<IViewObject>                  pVO;
     CComQIPtr<IOleInPlaceObjectWindowless>  pOIPOW;
     CComQIPtr<IOleInPlaceObject>            pOIPO;
-    RECT                                    m_rSwf;
-    RECT                                    m_rWin;
+    CRect                                   m_rSwf;
+    CRect                                   m_rWin;
     HRESULT                                 hr;
     void                                   *m_lpBitsOnly;
     HDC                                     m_hdcBack;
@@ -34,13 +35,31 @@ struct SwiffOutWnd : CWnd,
     CRegKey                                 m_regkey;
     CString                                 m_cmdLine;
     
-    int m_borderWidth;
-    int m_borderHeight;
+    int                                     m_borderWidth;
+    int                                     m_borderHeight;
+
+    int                                     m_width;
+    int                                     m_height;
 
     DECLARE_MESSAGE_MAP()
 public:
     SwiffOutWnd();
     ~SwiffOutWnd();
+    
+
+    STDMETHOD(OnReadyStateChange)(long newState)
+    {
+        return S_OK;
+    }
+    STDMETHOD(OnProgress)(long percentDone)
+    {
+        return S_OK;
+    }
+    STDMETHOD(FSCommand)(_bstr_t command, _bstr_t args )
+    {
+        return S_OK;
+    }
+
     //the implementation of IServiceProvider interface
     virtual /* [local] */ HRESULT STDMETHODCALLTYPE raw_RemoteQueryService( 
             /* [in] */ GUID *guidService,

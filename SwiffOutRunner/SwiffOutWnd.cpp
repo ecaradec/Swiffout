@@ -6,7 +6,8 @@
 // host should implement direct draw for better performances
 
 // swiffout:swiffout_href=http://www.miniclip.com/games/final-ninja/pl/finalninja.swf,swiffout_width=550,swiffout_height=400,flashvars=undefined  /setresolution=0
-// swiffout:swiffout_href=http://cdn.nitrome.com/games/bcbowcontest/bcbowcontest.swf,swiffout_width=550,swiffout_height=400,flashvars=undefined  /setresolution=0
+// swiffout:swiffout_href=http://cdn.nitrome.com/games/bcbowcontest/bcbowcontest.swf,swiffout_width=550,swiffout_height=400,swiffout_flashvars=undefined  /setresolution=0
+// C:\devel\SwiffOut\release\swiffoutrunner.exe swiffout:swiffout_href=http://chat.kongregate.com/gamez/0005/5550/live/fTwo_138_Kong.swf?kongregate_game_version=1253280582,swiffout_width=500,swiffout_height=600,swiffout_flashvars=kongregate=true&kongregate_usern
 
 //declare required GUIDs
 #ifndef DEFINE_GUID2
@@ -46,7 +47,6 @@ BEGIN_MESSAGE_MAP(FlashWndSubclass,CWnd)
     ON_WM_RBUTTONDOWN()
     ON_WM_RBUTTONUP()
 END_MESSAGE_MAP()
-
 
 SwiffOutWnd::SwiffOutWnd()
 {
@@ -88,8 +88,10 @@ HRESULT SwiffOutWnd::raw_RemoteQueryService(GUID *guidService, GUID *riid, IUnkn
     return E_NOINTERFACE;
 }
 void SwiffOutWnd::OnRButtonUp(UINT nFlags, CPoint point) {
-    ClientToScreen(&point);
-    m.TrackPopupMenu(0, point.x, point.y, this);
+    CPoint p;
+    GetCursorPos(&p);
+    //ClientToScreen(&point);
+    m.TrackPopupMenu(0, p.x, p.y, this);
 }
 void SwiffOutWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
     if(nChar==VK_ESCAPE) {
@@ -242,17 +244,21 @@ bool QAssertHR(HRESULT hr, char *file, int line) {
 #define QASSERT_HR(expr) QAssertHR((expr),__FILE__, __LINE__)
 
 void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
+    m_width=width;
+    m_height=height;
+
     //
     // read registry
     //
     m_regkey.Open(HKEY_CURRENT_USER, L"Software\\SwiffOut");
 
     DWORD enableEscKey=BST_CHECKED;
-    DWORD startFullscreen=BST_CHECKED;
+    DWORD startFullscreen=0;
 
     m_regkey.QueryDWORDValue(L"enableEscKey", enableEscKey);
     m_regkey.QueryDWORDValue(L"startFullscreen", startFullscreen);
 
+    m_fullscreen=startFullscreen;
     //
     // create popup
     //
@@ -269,7 +275,7 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     //resMenu.AppendMenu(MF_CHECKED, ID_CLOSEST_RESOLUTION, L"Select closest resolution");
 
     //
-    // scan for best resolution and populate menu
+    // save original resolution
     //
     memset(&defaultDM,0,sizeof(defaultDM));
     // set resolution        
@@ -277,103 +283,23 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     
     EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &defaultDM);
 
-    // TODO: Add extra initialization here    
-    memset(&dm,0,sizeof(dm));
-    dm.dmSize=sizeof(DEVMODE);
-    
-    int resolutionNb=0;
-    int resolutionCmd=ID_FIRST_RESOLUTION;
-    int smallestDiff=0x07FFFFFF;
-    int displayFreq=0;
-    int bestMode=0;
-    int mode=0;
-    BOOL b;
-    while(1) {
-        dm.dmSize=sizeof(DEVMODE);
-        if((b=EnumDisplaySettings(0, mode, &dm)) && dm.dmBitsPerPel==32) {
-
-            CString str;
-            //str.Format(L"%dx%d", dm.dmPelsWidth, dm.dmPelsHeight);
-            //resMenu.AppendMenu(MF_UNCHECKED, resolutionCmd, str);
-            resolutionNb++;
-            resolutionCmd++;
-
-            if( dm.dmPelsWidth >= width && dm.dmPelsHeight>= height) {
-                int diff=dm.dmPelsWidth - width + dm.dmPelsHeight - height;
-                if(diff<smallestDiff || (diff==smallestDiff && dm.dmDisplayFrequency>displayFreq)) {
-                    smallestDiff=diff;
-                    bestMode=mode;
-                }
-            }
-        }
-        if(!b)
-            break;
-        mode++;
-    }
-
-    EnumDisplaySettings(0, bestMode, &dm);
-
-    m_fullscreen=startFullscreen;
-    if(startFullscreen) {    
-        LONG l=ChangeDisplaySettingsEx(0, &dm, 0, CDS_FULLSCREEN, 0);
-    }
-
-    //
-    // resize the game, but keep a correct ratio 
-    //
-    float wRatio=(float)dm.dmPelsWidth/width;
-    float hRatio=(float)dm.dmPelsHeight/height;
-
-    float ratio=min(wRatio,hRatio);
-
-    CRect rWin;
-    rWin.top=0;
-    rWin.left=0;
-    rWin.right=dm.dmPelsWidth;
-    rWin.bottom=dm.dmPelsHeight;
-
-    int diffH=dm.dmPelsHeight-height*ratio;
-    int diffW=dm.dmPelsWidth-width*ratio;
-
-    RECT rSwf;
-    rSwf.top=diffH/2;
-    rSwf.left=diffW/2;
-    rSwf.right=width*ratio+diffW/2;
-    rSwf.bottom=height*ratio+diffH/2;
-
-
-    DWORD   readBytes=0;
-    HRESULT hr;
-    m_lpBitsOnly=0;
-    m_hdcBack=0;
-    m_bmpBack=0;
-
-    m_rSwf=rSwf;
-    m_rWin=rWin;
+    m_rWin=CRect(0,0,width,height);
+    m_rSwf=CRect(0,0,width,height);
 
     //
     // GUI stuff and flash initialisation
     //
 
-    CreateEx(WS_EX_TOPMOST, AfxRegisterWndClass(0), L"SwiffOutRunner", WS_SYSMENU|WS_MINIMIZEBOX, 0, 0, rWin.right-rWin.left, rWin.bottom-rWin.top, 0, 0);
+    //CreateEx(WS_EX_TOPMOST, AfxRegisterWndClass(0), L"SwiffOutRunner", WS_SYSMENU|WS_MINIMIZEBOX, rWin, 0, 0);
+    CreateEx(0, AfxRegisterWndClass(0), L"SwiffOutRunner", WS_SYSMENU|WS_MINIMIZEBOX|WS_CAPTION, m_rWin, 0, 0);
     g_mainHWND=GetSafeHwnd();
 
     CRect rClient;
     GetClientRect(&rClient);
 
-    m_borderWidth=rWin.Width()-rClient.Width();
-    m_borderHeight=rWin.Height()-rClient.Height();
-        
-
-    if(m_fullscreen) {
-        ModifyStyle(WS_CAPTION,WS_POPUP);
-        SetWindowPos(0,0,0,m_rWin.right-m_rWin.left,m_rWin.bottom-m_rWin.top,SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOZORDER|SWP_SHOWWINDOW);
-    } else {
-        CenterWindow();        
-        SetWindowPos(&CWnd::wndNoTopMost,0,0,m_rWin.right-m_rWin.left+m_borderWidth,m_rWin.bottom-m_rWin.top+m_borderHeight,SWP_NOZORDER|SWP_SHOWWINDOW|SWP_NOMOVE);
-    }
-
-
+    m_borderWidth=m_rWin.Width()-rClient.Width();
+    m_borderHeight=m_rWin.Height()-rClient.Height();        
+    
     if(!QASSERT_HR(OleCreate(ShockwaveFlashObjects::CLSID_ShockwaveFlash, IID_IOleObject, OLERENDER_DRAW, 0, (IOleClientSite *)this, (IStorage *)this, (void **)&pOO))) {
         PostQuitMessage(0);
         return;
@@ -393,6 +319,9 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     pOIPO=pOO;
 
     pSF=pOO;
+
+    DWORD dw;
+    AtlAdvise(pSF, (IDispatch*)this, ShockwaveFlashObjects::DIID__IShockwaveFlashEvents, &dw);    
 
     // bizarrement en mode transparent c'est plus lent, mais ca consomme moins de CPU
     // apres verification : chrome consomme moins, parce qu'il donne moins de CPU a flash.
@@ -416,12 +345,15 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
         return;
     }
 
-    if(!QASSERT_HR(pOIPO->SetObjectRects(&rSwf, &rSwf))) {
+    SetFullscreen(m_fullscreen);    
+    ShowWindow(SW_SHOW);
+
+    if(!QASSERT_HR(pOIPO->SetObjectRects(&m_rSwf, &m_rSwf))) {
         PostQuitMessage(0);
         return;
     }
 
-    if(!QASSERT_HR(pOIPOW->SetObjectRects(&rSwf, &rSwf))) {
+    if(!QASSERT_HR(pOIPOW->SetObjectRects(&m_rSwf, &m_rSwf))) {
         PostQuitMessage(0);
         return;
     }
@@ -430,8 +362,11 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     pOIPO->GetWindow(&flashHWND);
     clss=new FlashWndSubclass;
     clss->SubclassWindow(flashHWND);
+
+    pSF->put_AllowScriptAccess(_bstr_t("samedomain"));
     
-    if(!QASSERT_HR(pSF->LoadMovie(0, _bstr_t(swf)))) {
+    hr=pSF->LoadMovie(0, _bstr_t(swf));
+    if(!QASSERT_HR(hr)) {
         PostQuitMessage(0);
         return;
     }
@@ -439,14 +374,85 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     if(!QASSERT_HR(pSF->Play())) {
         PostQuitMessage(0);
         return;
-    }
-
-    SetCapture(TRUE);
+    }    
 }
 
 void SwiffOutWnd::SetFullscreen(bool b) {
     m_fullscreen=b;
     if(b) {
+        float pixelratio = float(defaultDM.dmPelsWidth) / defaultDM.dmPelsHeight;
+
+        // TODO: Add extra initialization here    
+        memset(&dm,0,sizeof(dm));
+        dm.dmSize=sizeof(DEVMODE);
+        
+        int resolutionNb=0;
+        int resolutionCmd=ID_FIRST_RESOLUTION;
+        int smallestDiff=0x07FFFFFF;
+        int displayFreq=0;
+        int bestMode=0;
+        int mode=0;
+        BOOL b;
+        while(1) {
+            dm.dmSize=sizeof(DEVMODE);
+            if((b=EnumDisplaySettings(0, mode, &dm)) && dm.dmBitsPerPel==32) {
+
+                CString str;
+                //str.Format(L"%dx%d", dm.dmPelsWidth, dm.dmPelsHeight);
+                //resMenu.AppendMenu(MF_UNCHECKED, resolutionCmd, str);
+                resolutionNb++;
+                resolutionCmd++;
+
+                float r1=float(dm.dmPelsWidth) / dm.dmPelsHeight;
+
+                if( dm.dmPelsWidth >= m_width && dm.dmPelsHeight>= m_height && r1==pixelratio) {
+                    int diff=dm.dmPelsWidth - m_width + dm.dmPelsHeight - m_height;
+                    if(diff<smallestDiff || (diff==smallestDiff && dm.dmDisplayFrequency>displayFreq)) {
+                        smallestDiff=diff;
+                        bestMode=mode;
+                    }
+                }
+            }
+            if(!b)
+                break;
+            mode++;
+        }
+
+        EnumDisplaySettings(0, bestMode, &dm);
+
+        //
+        // resize the game, but keep a correct ratio 
+        //
+        float wRatio=(float)dm.dmPelsWidth/m_width;
+        float hRatio=(float)dm.dmPelsHeight/m_height;
+
+        float ratio=min(wRatio,hRatio);
+
+        CRect rWin;
+        rWin.top=0;
+        rWin.left=0;
+        rWin.right=dm.dmPelsWidth;
+        rWin.bottom=dm.dmPelsHeight;
+
+        int diffH=dm.dmPelsHeight-m_height*ratio;
+        int diffW=dm.dmPelsWidth-m_width*ratio;
+
+        RECT rSwf;
+        rSwf.top=diffH/2;
+        rSwf.left=diffW/2;
+        rSwf.right=m_width*ratio+diffW/2;
+        rSwf.bottom=m_height*ratio+diffH/2;
+
+
+        DWORD   readBytes=0;
+        HRESULT hr;
+        m_lpBitsOnly=0;
+        m_hdcBack=0;
+        m_bmpBack=0;
+
+        m_rSwf=rSwf;
+        m_rWin=rWin;
+
         ChangeDisplaySettingsEx(0, &dm, 0, CDS_FULLSCREEN, 0);
 
         LONG style=GetWindowLong(GetHWND(),GWL_STYLE);
@@ -456,6 +462,9 @@ void SwiffOutWnd::SetFullscreen(bool b) {
         SetWindowPos(&CWnd::wndTopMost,0,0,m_rWin.right-m_rWin.left,m_rWin.bottom-m_rWin.top,SWP_FRAMECHANGED);
         ::SetFocus(GetHWND());
     } else {
+        m_rWin=CRect(0,0,m_width,m_height);
+        m_rSwf=CRect(0,0,m_width,m_height);
+
         ChangeDisplaySettingsEx(0, &defaultDM, 0, CDS_FULLSCREEN, 0);
 
         LONG style=GetWindowLong(GetHWND(),GWL_STYLE);
@@ -463,7 +472,11 @@ void SwiffOutWnd::SetFullscreen(bool b) {
         style&=~WS_POPUP;
         SetWindowLong(GetHWND(), GWL_STYLE, style);
         SetWindowPos(&CWnd::wndNoTopMost,0,0,m_rWin.right-m_rWin.left+m_borderWidth,m_rWin.bottom-m_rWin.top+m_borderHeight,SWP_FRAMECHANGED|SWP_NOMOVE);
+        CenterWindow();
     }
+
+    pOIPO->SetObjectRects(&m_rSwf, &m_rSwf);
+    pOIPOW->SetObjectRects(&m_rSwf, &m_rSwf);
 }
 
 //
@@ -475,7 +488,7 @@ void SwiffOutWnd::OnPaint() {
 
     CRect r;
     GetClientRect(&r);
-    pDC->FillSolidRect(&r,0x000000);
+    pDC->FillSolidRect(&r,0x010101);
     
     OleDraw(pVO, DVASPECT_CONTENT, pDC->GetSafeHdc(), &m_rSwf);
     EndPaint(&ps);
@@ -567,7 +580,9 @@ HRESULT __stdcall SwiffOutWnd::QueryInterface(REFIID riid, void ** ppvObject) {
     else if (IsEqualGUID(riid, IID_IStorage))
 	    *ppvObject = (void*)dynamic_cast<IStorage *>(this);
     else if (IsEqualGUID(riid, ShockwaveFlashObjects::IID_IServiceProvider))
-	    *ppvObject = (void*)dynamic_cast<ShockwaveFlashObjects::IServiceProvider *>(this);      
+	    *ppvObject = (void*)dynamic_cast<ShockwaveFlashObjects::IServiceProvider *>(this);
+    else if (IsEqualGUID(riid, ShockwaveFlashObjects::DIID__IShockwaveFlashEvents))
+        *ppvObject = (void*)dynamic_cast<ShockwaveFlashObjects::_IShockwaveFlashEvents*>(this);   
     else
     {
 	    *ppvObject = 0;
@@ -707,7 +722,34 @@ HRESULT __stdcall SwiffOutWnd::TranslateAccelerator(LPMSG lpmsg, WORD wID) { ret
 HRESULT __stdcall SwiffOutWnd::GetTypeInfoCount(UINT  *pctinfo) { return E_NOTIMPL; }
 HRESULT __stdcall SwiffOutWnd::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo  * *ppTInfo) { return E_NOTIMPL; }
 HRESULT __stdcall SwiffOutWnd::GetIDsOfNames(REFIID riid, LPOLESTR  *rgszNames, UINT cNames, LCID lcid, DISPID  *rgDispId) { return E_NOTIMPL; }
-HRESULT __stdcall SwiffOutWnd::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS  *pDispParams, VARIANT  *pVarResult, EXCEPINFO  *pExcepInfo, UINT  *puArgErr) { return E_NOTIMPL; }
+HRESULT __stdcall SwiffOutWnd::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS  *pDispParams, VARIANT  *pVarResult, EXCEPINFO  *pExcepInfo, UINT  *puArgErr) { 
+    TCHAR buff[256];
+    switch(dispIdMember) {
+        case DISPID_READYSTATECHANGE: // readystatechange vt_i4            
+            swprintf(buff, L"READYSTATECHANGE : %d\n", pDispParams->rgvarg[0].intVal);
+            OutputDebugString(buff);
+
+            double w,h;
+            if(pDispParams->rgvarg[0].intVal==4) {
+                w=pSF->TGetPropertyAsNumber(_bstr_t("/"), 8);
+                h=pSF->TGetPropertyAsNumber(_bstr_t("/"), 9);
+            }
+
+            return S_OK;
+            break;
+        case 0x7a6: // onprogress vt_i4
+            swprintf(buff, L"ONPROGRESS : %d\n", pDispParams->rgvarg[0].intVal);
+            OutputDebugString(buff);
+            return S_OK;
+            break;
+        //case 0x96: //fscommand bstr,bstr
+        //    break;
+        default:
+            swprintf(buff, L"UNKNOWNDISPID : %d\n", dispIdMember);
+            OutputDebugString(buff);
+    }
+    return E_NOTIMPL;
+}
 
 BEGIN_MESSAGE_MAP(SwiffOutWnd, CWnd)
     ON_WM_KEYDOWN()
