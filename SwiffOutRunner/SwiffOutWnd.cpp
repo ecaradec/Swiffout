@@ -380,7 +380,7 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
 void SwiffOutWnd::SetFullscreen(bool b) {
     m_fullscreen=b;
     if(b) {
-        float pixelratio = float(defaultDM.dmPelsWidth) / defaultDM.dmPelsHeight;
+        //float pixelratio = float(defaultDM.dmPelsWidth) / defaultDM.dmPelsHeight;
 
         // TODO: Add extra initialization here    
         memset(&dm,0,sizeof(dm));
@@ -405,7 +405,7 @@ void SwiffOutWnd::SetFullscreen(bool b) {
 
                 float r1=float(dm.dmPelsWidth) / dm.dmPelsHeight;
 
-                if( dm.dmPelsWidth >= m_width && dm.dmPelsHeight>= m_height && r1==pixelratio) {
+                if( dm.dmPelsWidth >= m_width && dm.dmPelsHeight>= m_height/* && r1==pixelratio*/) {
                     int diff=dm.dmPelsWidth - m_width + dm.dmPelsHeight - m_height;
                     if(diff<smallestDiff || (diff==smallestDiff && dm.dmDisplayFrequency>displayFreq)) {
                         smallestDiff=diff;
