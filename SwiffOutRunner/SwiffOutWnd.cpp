@@ -291,7 +291,7 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     //
 
     //CreateEx(WS_EX_TOPMOST, AfxRegisterWndClass(0), L"SwiffOutRunner", WS_SYSMENU|WS_MINIMIZEBOX, rWin, 0, 0);
-    CreateEx(0, AfxRegisterWndClass(0), L"SwiffOutRunner", WS_SYSMENU|WS_MINIMIZEBOX|WS_CAPTION, m_rWin, 0, 0);
+    CreateEx(0, AfxRegisterWndClass(0), L"SwiffOutRunner", WS_SYSMENU|WS_MINIMIZEBOX|WS_CAPTION|WS_MAXIMIZEBOX, m_rWin, 0, 0);
     g_mainHWND=GetSafeHwnd();
 
     CRect rClient;
@@ -557,6 +557,15 @@ void SwiffOutWnd::OnSelectResolution(UINT cmd)
     selDM.dmPelsHeight=height;    
     ChangeDisplaySettingsEx(0, &selDM, 0, CDS_FULLSCREEN, 0);*/
 }
+void SwiffOutWnd::OnSysCommand(UINT nID, LPARAM lParam)
+{
+    if(nID==SC_MAXIMIZE) {
+        SetFullscreen(true);
+        return;
+    } else {
+        CWnd::OnSysCommand(nID,lParam);
+    }
+}
 
 //
 // COM Interfaces
@@ -757,6 +766,7 @@ BEGIN_MESSAGE_MAP(SwiffOutWnd, CWnd)
     ON_WM_CREATE()
     ON_WM_DESTROY()
     ON_WM_PAINT()
+    ON_WM_SYSCOMMAND()
     ON_COMMAND(ID_TOGGLE_FULLSCREEN, OnToggleFullscreen)
     ON_COMMAND(ID_ENABLE_ESC, OnEnableEsc)
     ON_COMMAND(ID_START_FULLSCREEN, OnStartFullscreen)

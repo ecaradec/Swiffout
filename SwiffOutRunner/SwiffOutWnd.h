@@ -85,6 +85,7 @@ public:
     void OnExit();
     void OnClosestResolution();
     void OnSelectResolution(UINT cmd);
+    void OnSysCommand(UINT nID, LPARAM lParam);
 
     //
     // COM Interfaces
