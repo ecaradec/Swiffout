@@ -46,7 +46,7 @@ struct SwiffOut : CWinApp {
         int height=_ttoi(cmdline.Mid(heightIndex+17));
         flashvars=cmdline.Mid(flashVarsIndex+20);
 
-		if(!CHECKLICKEY && swf.Find("http://swiffoutgames.com/")!=0) {
+		/*if(!CHECKLICKEY && swf.Find("http://swiffoutgames.com/")!=0) {
             CRegKey k;
             k.Create(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\{1F2285D5-05F4-40ab-BFC2-BF3B9B7B1F50}");
 			DWORD nbTry=10^0x53;
@@ -65,7 +65,7 @@ struct SwiffOut : CWinApp {
             bool allowed = checkSwiffOutKey();
             if(r==2 || (!allowed && nbTry<=0))
                 return FALSE;
-        }
+        }*/
         
         flashWnd=new SwiffOutWnd;
         m_pMainWnd=flashWnd;
