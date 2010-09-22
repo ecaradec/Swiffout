@@ -38,6 +38,7 @@ struct SwiffOutWnd : CWnd,
     int                                     m_borderWidth;
     int                                     m_borderHeight;
 
+    int                                     m_readyState;
     int                                     m_width;
     int                                     m_height;
 

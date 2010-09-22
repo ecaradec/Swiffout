@@ -8,6 +8,7 @@
 // swiffout:swiffout_href=http://www.miniclip.com/games/final-ninja/pl/finalninja.swf,swiffout_width=550,swiffout_height=400,flashvars=undefined  /setresolution=0
 // swiffout:swiffout_href=http://cdn.nitrome.com/games/bcbowcontest/bcbowcontest.swf,swiffout_width=550,swiffout_height=400,swiffout_flashvars=undefined  /setresolution=0
 // C:\devel\SwiffOut\release\swiffoutrunner.exe swiffout:swiffout_href=http://chat.kongregate.com/gamez/0005/5550/live/fTwo_138_Kong.swf?kongregate_game_version=1253280582,swiffout_width=500,swiffout_height=600,swiffout_flashvars=kongregate=true&kongregate_usern
+// swiffout:swiffout_href=http://uploads.ungrounded.net/548000/548781_max5.swf,swiffout_width=100%,swiffout_height=100%,swiffout_flashvars=NewgroundsAPI_PublisherID=1&NewgroundsAPI_SandboxID=4c9a536b45fc8
 
 //declare required GUIDs
 #ifndef DEFINE_GUID2
@@ -246,6 +247,8 @@ bool QAssertHR(HRESULT hr, char *file, int line) {
 void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     m_width=width;
     m_height=height;
+
+    m_readyState=0;
 
     //
     // read registry
@@ -737,12 +740,21 @@ HRESULT __stdcall SwiffOutWnd::Invoke(DISPID dispIdMember, REFIID riid, LCID lci
         case DISPID_READYSTATECHANGE: // readystatechange vt_i4            
             swprintf(buff, L"READYSTATECHANGE : %d\n", pDispParams->rgvarg[0].intVal);
             OutputDebugString(buff);
-
+            
             double w,h;
-            if(pDispParams->rgvarg[0].intVal==4) {
+            if(pDispParams->rgvarg[0].intVal==4 && m_readyState!=4) {                
                 w=pSF->TGetPropertyAsNumber(_bstr_t("/"), 8);
                 h=pSF->TGetPropertyAsNumber(_bstr_t("/"), 9);
+
+                m_width=w;
+                m_height=h;
+                SetFullscreen(m_fullscreen);
+
+                swprintf(buff, L"SIZE %d %d\n", m_width, m_height);
+                OutputDebugString(buff);
             }
+
+            m_readyState=pDispParams->rgvarg[0].intVal;
 
             return S_OK;
             break;
