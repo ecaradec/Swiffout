@@ -2,6 +2,18 @@
 #include "resource.h"
 #include "SwiffOutWnd.h"
 #include <afxdlgs.h>
+#include <Wininet.h>
+#include "../zlib-1.2.5/zlib.h"
+
+#define CHECK_ERR(err, msg) { \
+    if (err != Z_OK) { \
+        char buff[256]; \
+        sprintf(buff, "%s error: %d\n", msg, err); \
+        OutputDebugStringA(buff); \
+        exit(1); \
+    } \
+}
+
 
 // host should implement direct draw for better performances
 
@@ -244,22 +256,169 @@ bool QAssertHR(HRESULT hr, char *file, int line) {
 
 #define QASSERT_HR(expr) QAssertHR((expr),__FILE__, __LINE__)
 
+bool QAssert(bool b, char *msgt, char *file, int line) {
+    if(!b){
+        CString msg;
+        msg.Format(_T("Line : %s(%d)\n\nReason : %s\nThe application will close."), CString(file), line, msgt);
+        MessageBox(g_mainHWND, msg, _T("SwiffOut Initialisation Failed"), MB_OK|MB_ICONERROR);
+    }
+    return b;
+}
+#define QASSERT(expr,msg) QAssert((expr),msg,__FILE__, __LINE__)
+
+
+int bitoff = {0};
+char lastch = {0};
+
+#define alignbits() bitoff = 0;
+
+Byte *g_buff=0;
+/*
+int getbits(int nbits)
+{	int res = 0, nb, db;
+	for(nb = 0 ; nb < nbits ; nb += db)
+	{	if(bitoff == 0)
+		{	lastch = *(g_buff++);
+			bitoff = 8;
+		}
+		db = nbits - nb;
+		if(db > bitoff)
+			db = bitoff;
+		res <<= db;
+		res |= (lastch >> (bitoff -= db)) & ((1 << db) - 1);
+	}
+	return res;
+}
+*/
+
+int off=0;
+int getbits(int n) {
+    int t=0;
+    int x=*g_buff;
+
+    for(int i=0;i<n;i++) {
+        if(off==8) {
+            g_buff++;
+            x=*g_buff;
+            off=0;
+        }
+
+        t<<=1;
+        t|=(x>>(7-off) & 1);
+        off++;
+    }
+    return t;
+}
+
+int getsbits(int nbits)
+{	int res = getbits(nbits);
+	//if(res & (1 << (nbits-1)))
+	//	res |= (-1) << nbits;
+	return(res);
+}
+
+
+void test_inflate(Byte *compr, Byte *uncompr, uLong comprLen, uLong uncomprLen)
+{
+    int err;
+    z_stream d_stream; /* decompression stream */
+
+    strcpy((char*)uncompr, "garbage");
+
+    d_stream.zalloc = (alloc_func)0;
+    d_stream.zfree = (free_func)0;
+    d_stream.opaque = (voidpf)0;
+
+    d_stream.next_in  = compr;
+    d_stream.avail_in = 0;
+    d_stream.next_out = uncompr;
+
+    err = inflateInit(&d_stream);
+    //CHECK_ERR(err, "inflateInit");
+
+    while (d_stream.total_out < uncomprLen && d_stream.total_in < comprLen) {
+        d_stream.avail_in = d_stream.avail_out = 1; /* force small buffers */
+        err = inflate(&d_stream, Z_NO_FLUSH);
+        if (err == Z_STREAM_END) break;
+        //CHECK_ERR(err, "inflate");
+    }
+
+    err = inflateEnd(&d_stream);
+
+    QASSERT(err==0, "the decompression of the SWF file has failed");
+//    CHECK_ERR(err, "inflateEnd");
+
+    /*if (strcmp((char*)uncompr, hello)) {
+        fprintf(stderr, "bad inflate\n");
+        exit(1);
+    } else {
+        printf("inflate(): %s\n", (char *)uncompr);
+    }*/
+}
+
 void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
-    m_width=width;
-    m_height=height;
+    // detect the size
+    HINTERNET hIO=InternetOpen(L"Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))", INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0);
+    
+    HINTERNET hOUrl=InternetOpenUrlA(hIO, swf, 0, 0, 0, 0);   
+
+    DWORD read=0;
+    char sig[3];
+    InternetReadFile(hOUrl, sig, sizeof(sig), &read);
+
+    unsigned char version;
+    InternetReadFile(hOUrl, &version, sizeof(version), &read);
+
+    unsigned int filelength;
+    InternetReadFile(hOUrl, &filelength, sizeof(filelength), &read);
+    
+    char *buff=0,*compressed=0;
+    if(strncmp(sig,"CWS",3)==0) {
+        compressed=(char*)malloc(min(filelength,250));
+        buff=(char*)malloc(min(filelength,500));
+        InternetReadFile(hOUrl, compressed, min(filelength,250), &read); // filelength is the uncompressed length
+        test_inflate((Byte*)compressed, (Byte*)buff, read, min(filelength,500));
+        g_buff=(Byte*)buff;
+    } else {
+        g_buff=(Byte*)malloc(5*sizeof(int));
+        buff=(char*)g_buff;
+        InternetReadFile(hOUrl, g_buff, min(filelength,5*sizeof(int)), &read); // filelength is the uncompressed length
+    }
+
+    if(!QASSERT(read>sizeof(int)*5, "Invalid SWF file or game : the detection of the size has failed.")) {
+        free(g_buff);
+        return PostQuitMessage(0);
+    }
+
+	int nbits = getbits(5);
+	int xmin = getbits(nbits)/20.;
+	int xmax = getbits(nbits)/20.;
+	int ymin = getbits(nbits)/20.;
+	int ymax = getbits(nbits)/20.;
+
+    if(buff)
+        free(buff);
+    if(compressed)
+        free(compressed);
+    buff=0;
+    compressed=0;
+    g_buff=0;
+
+    m_width=xmax-xmin;
+    m_height=ymax-ymin;
 
     m_readyState=0;
-
-    //
-    // read registry
-    //
-    m_regkey.Open(HKEY_CURRENT_USER, L"Software\\SwiffOut");
 
     DWORD enableEscKey=BST_CHECKED;
     DWORD startFullscreen=0;
 
-    m_regkey.QueryDWORDValue(L"enableEscKey", enableEscKey);
-    m_regkey.QueryDWORDValue(L"startFullscreen", startFullscreen);
+    //
+    // read registry
+    //
+    if(m_regkey.Open(HKEY_CURRENT_USER, L"Software\\SwiffOut")==S_OK) {
+        m_regkey.QueryDWORDValue(L"enableEscKey", enableEscKey);
+        m_regkey.QueryDWORDValue(L"startFullscreen", startFullscreen);
+    }
 
     m_fullscreen=startFullscreen;
     //
@@ -304,13 +463,11 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     m_borderHeight=m_rWin.Height()-rClient.Height();        
     
     if(!QASSERT_HR(OleCreate(ShockwaveFlashObjects::CLSID_ShockwaveFlash, IID_IOleObject, OLERENDER_DRAW, 0, (IOleClientSite *)this, (IStorage *)this, (void **)&pOO))) {
-        PostQuitMessage(0);
-        return;
+        return PostQuitMessage(0);
     }
 
     if(!QASSERT_HR(OleSetContainedObject(pOO, TRUE))) {
-        PostQuitMessage(0);
-        return;
+        return PostQuitMessage(0);
     }
 
     pVOE=pOO;
@@ -331,34 +488,29 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
 	//hr=pSF->put_WMode(L"transparent");
     //hr=pSF->put_Scale(L"exactfit");
     if(!QASSERT_HR(pSF->put_Scale(L"showAll"))) {
-        PostQuitMessage(0);
-        return;
+        return PostQuitMessage(0);
     }
 
-    if(!QASSERT_HR(pSF->put_BackgroundColor(0x00000000))) {
-        PostQuitMessage(0);
-        return;
+    if(!QASSERT_HR(pSF->put_BackgroundColor(0))) {
+        return PostQuitMessage(0);
     }
 
     CComPtr<IDispatch> pDispSF(pSF);
     pDispSF.PutPropertyByName(L"flashVars", &CComVariant(flashVars));
 
     if(!QASSERT_HR(pOO->DoVerb(OLEIVERB_SHOW, NULL, (IOleClientSite *)this, 0, NULL, NULL))) {
-        PostQuitMessage(0);
-        return;
+        return PostQuitMessage(0);
     }
 
     SetFullscreen(m_fullscreen);    
     ShowWindow(SW_SHOW);
 
     if(!QASSERT_HR(pOIPO->SetObjectRects(&m_rSwf, &m_rSwf))) {
-        PostQuitMessage(0);
-        return;
+        return PostQuitMessage(0);
     }
 
     if(!QASSERT_HR(pOIPOW->SetObjectRects(&m_rSwf, &m_rSwf))) {
-        PostQuitMessage(0);
-        return;
+        return PostQuitMessage(0);
     }
 
     HWND flashHWND;
@@ -366,17 +518,13 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     clss=new FlashWndSubclass;
     clss->SubclassWindow(flashHWND);
 
-    pSF->put_AllowScriptAccess(_bstr_t("samedomain"));
-    
     hr=pSF->LoadMovie(0, _bstr_t(swf));
     if(!QASSERT_HR(hr)) {
-        PostQuitMessage(0);
-        return;
+        return PostQuitMessage(0);
     }
     
     if(!QASSERT_HR(pSF->Play())) {
-        PostQuitMessage(0);
-        return;
+        return PostQuitMessage(0);
     }    
 }
 
@@ -491,7 +639,7 @@ void SwiffOutWnd::OnPaint() {
 
     CRect r;
     GetClientRect(&r);
-    pDC->FillSolidRect(&r,0x010101);
+    pDC->FillSolidRect(&r,0);
     
     OleDraw(pVO, DVASPECT_CONTENT, pDC->GetSafeHdc(), &m_rSwf);
     EndPaint(&ps);
@@ -741,8 +889,23 @@ HRESULT __stdcall SwiffOutWnd::Invoke(DISPID dispIdMember, REFIID riid, LCID lci
             swprintf(buff, L"READYSTATECHANGE : %d\n", pDispParams->rgvarg[0].intVal);
             OutputDebugString(buff);
             
-            double w,h;
-            if(pDispParams->rgvarg[0].intVal==4 && m_readyState!=4) {                
+                        
+
+            /*double w,h;
+            if(pDispParams->rgvarg[0].intVal==4 && m_readyState!=4) {
+
+                /*char tmp[MAX_PATH];
+                INTERNET_CACHE_ENTRY_INFO *cei=(INTERNET_CACHE_ENTRY_INFO*)tmp;
+                memset(buff,0,sizeof(tmp));
+                cei->dwStructSize=sizeof(tmp);
+                DWORD ceiSize=sizeof(tmp);
+                
+                LPTSTR filename[MAX_PATH+1]={0};
+                RetrieveUrlCacheEntryFile(L"http://www.miniclip.com/games/final-ninja/pl/finalninja.swf", cei, &ceiSize, 0);
+                int err=GetLastError();
+                //URLDownloadToCacheFile(0, L"http://www.miniclip.com/games/final-ninja/pl/finalninja.swf", (LPTSTR)filename, sizeof(filename), 0, 0);
+
+
                 w=pSF->TGetPropertyAsNumber(_bstr_t("/"), 8);
                 h=pSF->TGetPropertyAsNumber(_bstr_t("/"), 9);
 
@@ -752,7 +915,7 @@ HRESULT __stdcall SwiffOutWnd::Invoke(DISPID dispIdMember, REFIID riid, LCID lci
 
                 swprintf(buff, L"SIZE %d %d\n", m_width, m_height);
                 OutputDebugString(buff);
-            }
+            }*/
 
             m_readyState=pDispParams->rgvarg[0].intVal;
 

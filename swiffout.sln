@@ -3,12 +3,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ieExt", "ieExt\ieExt.vcproj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "swiffoutrunner", "SwiffOutRunner\bgamefu2.vcproj", "{7F2619E2-291C-49F6-9892-3DF0F9406114}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib-1.2.5\contrib\vstudio\vc2003\vc2003.vcproj", "{CCCAC7FB-0CCC-4A1A-BDDE-31EFB5F634A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
 		ConfigName.1 = Release
 	EndGlobalSection
 	GlobalSection(ProjectDependencies) = postSolution
+		{7F2619E2-291C-49F6-9892-3DF0F9406114}.0 = {CCCAC7FB-0CCC-4A1A-BDDE-31EFB5F634A9}
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{187447E7-28B9-4FCE-9ECC-3C8BC7246716}.Debug.ActiveCfg = Debug|Win32
@@ -19,6 +22,10 @@ Global
 		{7F2619E2-291C-49F6-9892-3DF0F9406114}.Debug.Build.0 = Debug|Win32
 		{7F2619E2-291C-49F6-9892-3DF0F9406114}.Release.ActiveCfg = Release|Win32
 		{7F2619E2-291C-49F6-9892-3DF0F9406114}.Release.Build.0 = Release|Win32
+		{CCCAC7FB-0CCC-4A1A-BDDE-31EFB5F634A9}.Debug.ActiveCfg = Debug|Win32
+		{CCCAC7FB-0CCC-4A1A-BDDE-31EFB5F634A9}.Debug.Build.0 = Debug|Win32
+		{CCCAC7FB-0CCC-4A1A-BDDE-31EFB5F634A9}.Release.ActiveCfg = Release|Win32
+		{CCCAC7FB-0CCC-4A1A-BDDE-31EFB5F634A9}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
