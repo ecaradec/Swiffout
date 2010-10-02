@@ -74,16 +74,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
             //alert("swiffout://swiffout_href="+request.src+",swiffout_width="+request.width+",swiffout_height="+request.height+",swiffout_flashvars="+swfList[i].flashVars);
         }    
-    } else if(request.msg=="runSwf") {
-        //alert("swiffout://swiffout_href="+request.src+",swiffout_width="+request.width+",swiffout_height="+request.height);
-
-        window.location="swiffout:swiffout_href="+request.src+",swiffout_width="+request.width+",swiffout_height="+request.height+",swiffout_flashvars="+request.flashVars;
-        window.setTimeout(function() {
-           window.location="http://swiffout.com/cpu-preservation.html";
-        }, 1000);
-
-        //console.log("swiffout:swiffout_href="+request.src+",swiffout_width="+request.width+",swiffout_height="+request.height);
-        sendResponse({});
+    } else if(request.msg=="navigate") {
+       window.location=request.href;
     }
 });
 

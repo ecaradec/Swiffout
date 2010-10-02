@@ -5,13 +5,9 @@
         function runBestSWF() {
             swfList.sort(function(a,b) { return b.width*b.height-a.width*a.height; });
 
-            //alert(swfList.length);
-            //for(var i=0;i<swfList.length;i++) {
-            //    alert(swfList[i].src+","+swfList[i].width+","+swfList[i].height+","+swfList[i].flashVars);
-            //}            
-
-            swfList[0].msg="runSwf";            
-            chrome.tabs.sendRequest(lastTab.id, swfList[0], function(response) {});
+            document.getElementById("pluginId").playSwf(swfList[0].src, swfList[0].flashVars);
+            
+            chrome.tabs.sendRequest(lastTab.id, {msg:"navigate", href:"http://swiffout.com/cpu-preservation.html"}, function(response) {});
         }
 
         chrome.browserAction.onClicked.addListener(function(tab) {            
@@ -29,4 +25,6 @@
             });
         
     </script>
+
+    <embed type="application/x-swiffout" id="pluginId">
 </html>

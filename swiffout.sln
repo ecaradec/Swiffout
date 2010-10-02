@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "swiffoutrunner", "SwiffOutR
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib-1.2.5\contrib\vstudio\vc2003\vc2003.vcproj", "{CCCAC7FB-0CCC-4A1A-BDDE-31EFB5F634A9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "regProtocol", "regProtocol\regProtocol.vcproj", "{DA31FC54-2CB9-42BD-9CE2-4451AAFAF0B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
@@ -26,6 +28,10 @@ Global
 		{CCCAC7FB-0CCC-4A1A-BDDE-31EFB5F634A9}.Debug.Build.0 = Debug|Win32
 		{CCCAC7FB-0CCC-4A1A-BDDE-31EFB5F634A9}.Release.ActiveCfg = Release|Win32
 		{CCCAC7FB-0CCC-4A1A-BDDE-31EFB5F634A9}.Release.Build.0 = Release|Win32
+		{DA31FC54-2CB9-42BD-9CE2-4451AAFAF0B0}.Debug.ActiveCfg = Debug|Win32
+		{DA31FC54-2CB9-42BD-9CE2-4451AAFAF0B0}.Debug.Build.0 = Debug|Win32
+		{DA31FC54-2CB9-42BD-9CE2-4451AAFAF0B0}.Release.ActiveCfg = Release|Win32
+		{DA31FC54-2CB9-42BD-9CE2-4451AAFAF0B0}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
