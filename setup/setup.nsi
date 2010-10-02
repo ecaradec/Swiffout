@@ -184,39 +184,43 @@ FunctionEnd
 ;--------------------------------
 ;installer sections
 
+installdir "$APPDATA\swiffout"
+installdirregkey HKCU "Software\SwiffOut" ""
 
 section
-    setoutpath "$programfiles\swiffout"
+    setoutpath "$INSTDIR\${chromeExtVersion}"
+
+    writeregstr hkcu "Software\SwiffOut" "InstallDir" $INSTDIR
 
     file ..\release\swiffoutrunner.exe
 
     ;ieExt
     file ..\release\ieExt.dll
-    RegDLL  "$programfiles\swiffout\ieExt.dll"
+    RegDLL  "$OUTDIR\ieExt.dll"
 
     ; firefoxExt
-    RMDir /r "$programfiles\swiffout\firefoxExt" ; to clean folder modification time
+    RMDir /r "$OUTDIR\firefoxExt" ; to clean folder modification time
     file /r ..\firefoxExt
-    writeregstr hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com" "$programfiles\swiffout\firefoxExt"
+    writeregstr hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com" "$OUTDIR\firefoxExt"
 
     ; chromeExt
     file ..\chromeExt.crx
 
-    writeregstr hklm "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "path" "$programfiles\swiffout\chromeExt.crx"
-    writeregstr hklm "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "version" ${chromeExtVersion}
+    writeregstr hkcu "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "path" "$OUTDIR\chromeExt.crx"
+    writeregstr hkcu "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "version" ${chromeExtVersion}
 
     createdirectory "$smprograms\swiffout"
-    createshortcut "$smprograms\swiffout\swiffout uninstall.lnk" "$programfiles\swiffout\uninstall.exe"
-    createshortcut "$smprograms\swiffout\swiffout help.lnk" "http://swiffout.com/help.html" "" "$programfiles\swiffout\swiffoutrunner.exe"
+    createshortcut "$smprograms\swiffout\swiffout uninstall.lnk" "$INSTDIR\uninstall.exe"
+    createshortcut "$smprograms\swiffout\swiffout help.lnk" "http://swiffout.com/help.html" "" "$OUTDIR\swiffoutrunner.exe"
 
     ;store installation folder
-    writeregstr hkcr "swiffout" "url protocol" ""
-    writeregstr hkcr "swiffout\shell\open\command" "" "$programfiles\swiffout\swiffoutrunner.exe %1"
+    writeregstr hkcu "software\classes\swiffout" "url protocol" ""
+    writeregstr hkcu "software\classes\swiffout\shell\open\command" "" '"$OUTDIR\swiffoutrunner.exe" "%1"'
     
     ;create uninstaller
-    writeuninstaller "$programfiles\swiffout\uninstall.exe"
-    writeregstr hklm "software\microsoft\windows\currentversion\uninstall\swiffout" "displayname" "swiffout"
-    writeregstr hklm "software\microsoft\windows\currentversion\uninstall\swiffout" "uninstallstring" "$programfiles\swiffout\uninstall.exe"
+    writeuninstaller "$INSTDIR\uninstall.exe"
+    writeregstr hkcu "software\microsoft\windows\currentversion\uninstall\swiffout" "displayname" "swiffout"
+    writeregstr hkcu "software\microsoft\windows\currentversion\uninstall\swiffout" "uninstallstring" "$INSTDIR\uninstall.exe"
 
     ;write the installation date	
 	; $0="01"      day
@@ -227,10 +231,10 @@ section
 	; $5="05"      minute
 	; $6="50"      seconds    
     ClearErrors
-    EnumRegKey $0 hklm "software\Classes\CLSID\{1F2285D5-05F4-40ab-BFC2-BF3B9B7B1F50}" 0
+    EnumRegKey $0 hkcu "software\Classes\CLSID\{1F2285D5-05F4-40ab-BFC2-BF3B9B7B1F50}" 0
     IfErrors 0 keyexist
         ${GetTime} "" "LS" $0 $1 $2 $3 $4 $5 $6
-        writeregstr hklm "software\Classes\CLSID\{1F2285D5-05F4-40ab-BFC2-BF3B9B7B1F50}" "" "$0$1$2" 
+        writeregstr hkcu "software\Classes\CLSID\{1F2285D5-05F4-40ab-BFC2-BF3B9B7B1F50}" "" "$0$1$2" 
     keyexist:
 
     ; open help
@@ -240,23 +244,24 @@ sectionend
 ;--------------------------------
 ;uninstaller section
 
-section "uninstall"
+section "uninstall"    
+    setoutpath "$INSTDIR"
 
     ;add your own files here...
 
-    delete "$programfiles\swiffout\uninstall.exe"
+    delete "$INSTDIR\uninstall.exe"
 
-    rmdir /r "$programfiles\swiffout"
+    rmdir /r "$INSTDIR"
 
-    deleteregkey hkcr "swiffout"
+    deleteregkey hkcu "software\classes\swiffout"
     deleteregkey hkcu "software\swiffout"
     
     ;chromeExt
-    deleteregkey hklm "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd"
+    deleteregkey hkcu "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd"
 
     ;firefoxExt
     deleteregvalue hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com"
 
     ;ieExt
-    UnRegDLL "$programfiles\swiffout\ieExt.dll"
+    UnRegDLL $INSTDIR\ieExt.dll"
 sectionend

@@ -14,6 +14,8 @@
     } \
 }
 
+// swiffout:swiffout_href=http://www.miniclip.com/games/final-ninja/pl/finalninja.swf,swiffout_width=550,swiffout_height=400,swiffout_flashvars=undefined
+// swiffout:swiffout_href=http://armorgames.com/files/games/the-day-6980.swf,swiffout_height=320,swiffout_width=200,swiffout_flashvars=auth_token=6b98648fc5709cf0155c8764adf0f97d
 
 // host should implement direct draw for better performances
 
@@ -356,12 +358,29 @@ void test_inflate(Byte *compr, Byte *uncompr, uLong comprLen, uLong uncomprLen)
     }*/
 }
 
+int strnatcmp(char const *a, char const *b);
+
 void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
+
+    /*TCHAR versionPath[MAX_PATH+1];
+    URLDownloadToCacheFile(0, L"http://swiffout.com/bin/version.ini",versionPath,sizeof(versionPath),0,0);
+
+    TCHAR remoteversionStr[50];
+    GetPrivateProfileString(L"swiffout",L"version",0,remoteversionStr, sizeof(remoteversionStr),versionPath);
+
+    TCHAR currentversionStr[50];
+    GetPrivateProfileString(L"swiffout",L"version",0,currentversionStr, sizeof(currentversionStr),L".\\version.ini");
+
+    if(strnatcmp(CStringA(currentversionStr), CStringA(remoteversionStr))<0) {
+        TCHAR setupPath[MAX_PATH+1];
+        URLDownloadToCacheFile(0, L"http://swiffout.com/bin/SwiffOut Setup.exe", setupPath, sizeof(setupPath), 0, 0);
+    }*/
+
     // detect the size
-    HINTERNET hIO=InternetOpen(L"Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))", INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0);
+    HINTERNET hIO=InternetOpen(L"Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US))", INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0);    
     
     HINTERNET hOUrl=InternetOpenUrlA(hIO, swf, 0, 0, 0, 0);   
-
+    
     DWORD read=0;
     char sig[3];
     InternetReadFile(hOUrl, sig, sizeof(sig), &read);
@@ -384,6 +403,9 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
         buff=(char*)g_buff;
         InternetReadFile(hOUrl, g_buff, min(filelength,5*sizeof(int)), &read); // filelength is the uncompressed length
     }
+
+    InternetCloseHandle(hIO);
+    InternetCloseHandle(hOUrl);
 
     if(!QASSERT(read>sizeof(int)*5, "Invalid SWF file or game : the detection of the size has failed.")) {
         free(g_buff);
