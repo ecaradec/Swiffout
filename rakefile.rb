@@ -2,15 +2,29 @@ task :all, [:version]=> [:chromeExt, :firefoxExt, :engine, :nsis] do
     puts "done"
 end
 
+task :copy, [:version] do |t,args|
+    FileUtils.mkdir_p "build/#{args.version}"
+    FileUtils.cp "build/SwiffOut Setup.exe", "build/#{args.version}/SwiffOut Setup.exe"
+    FileUtils.cp "build/SwiffOut Desktop Setup.exe", "build/#{args.version}/SwiffOut Desktop Setup.exe"
+    FileUtils.cp "build/chromeExt.crx", "build/#{args.version}/chromeExt.crx"
+    FileUtils.cp "build/chromeExt.zip", "build/#{args.version}/chromeExt.zip"
+end
+
 task :nsis, [:version] do |t,args|
     puts "building setup..."
 
     File.open("setup/VersionNb.nsh","w+") do |f|
         f << "VIAddVersionKey \"FileVersion\" \"#{args.version}\"\n"
         f << "VIProductVersion \"#{args.version}\"\n"        
+        f  << "!define productVersion \"#{args.version}\""
         f  << "!define chromeExtVersion \"#{args.version}\""
     end
+
     sh '"c:\Program Files\NSIS\makensis.exe" setup/setup.nsi'
+    FileUtils.mv "SwiffOut Setup.exe","build/SwiffOut Desktop Setup.exe"
+
+    sh '"c:\Program Files\NSIS\makensis.exe" /DADDONS setup/setup.nsi'
+    FileUtils.mv "SwiffOut Setup.exe","build/SwiffOut Setup.exe"
 end
 
 task :engine, [:version] do |t,args|
@@ -65,7 +79,7 @@ task :chromeExt, [:version] do |t,args|
     "default_icon": "icon.png"
   },
   "icons": { "48":"icon48.png", "128":"icon128.png" },
-  "permissions": ["tabs","http://grownsoftware.com/*"],
+  "permissions": ["tabs","http://swiffout.com/*"],
   "content_scripts": [ {
       "js": [ "swiffout.js"],
       "matches": [ "http://*/*"],
@@ -77,11 +91,28 @@ task :chromeExt, [:version] do |t,args|
 }.gsub(/__VERSION__/,args.version)
     end
 
+    FileUtils.cp "chromeExt/background.html", "background.html.bak1"
+    txt=File.read("chromeExt/background.html");
+    File.open("chromeExt/background.html","w+") do |f|
+        f.puts txt.gsub(/var ALL_IN_ONE_VERSION=.*$/, "var ALL_IN_ONE_VERSION=false;")
+    end
+
+    require 'crxmake'
+    # create crx
+    CrxMake.make(
+        :ex_dir => "chromeExt",
+        :crx_output => "build/chromeExt.zip"
+    )
+
+    File.open("chromeExt/background.html","w+") do |f|
+        f.puts txt.gsub(/var ALL_IN_ONE_VERSION=.*$/, "var ALL_IN_ONE_VERSION=true;")
+    end
+
     require 'crxmake'
     # create crx
     CrxMake.make(
         :ex_dir => "chromeExt",
         :pkey   => "chromeExt.pem",
-        :crx_output => "chromeExt.crx"
-    )    
+        :crx_output => "build/chromeExt.crx"
+    )
 end

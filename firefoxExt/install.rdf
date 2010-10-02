@@ -4,7 +4,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>swiffout@grownsoftware.com</em:id>
     <em:name>SwiffOut</em:name>
-    <em:version>1.2.5.0</em:version>
+    <em:version>1.0.0.0</em:version>
     <em:creator>GrownSoftware</em:creator>
     <em:description>Play flash games real fullscreen</em:description>
     <em:targetApplication>

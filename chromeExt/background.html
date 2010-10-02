@@ -1,5 +1,11 @@
 <html>
     <script>
+        var ALL_IN_ONE_VERSION=true;
+        if(!ALL_IN_ONE_VERSION && localStorage["firstLaunch"]!=false) {
+            chrome.tabs.create({url:"http://swiffout.com/welcome-chrome.html"});
+            localStorage["firstLaunch"]=false;
+        }
+
         var lastTab;
         var swfList=[];
         function runBestSWF() {
