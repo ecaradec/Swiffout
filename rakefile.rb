@@ -99,7 +99,7 @@ task :chromeExt, [:version] do |t,args|
 
     require 'crxmake'
     # create crx
-    CrxMake.make(
+    CrxMake.zip(
         :ex_dir => "chromeExt",
         :crx_output => "build/chromeExt.zip"
     )
