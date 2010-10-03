@@ -44,7 +44,8 @@ installdir "$APPDATA\swiffout"
 installdirregkey HKCU "Software\SwiffOut" ""
 
 section
-    setoutpath "$INSTDIR\${productVersion}"
+    ; setoutpath "$INSTDIR\${productVersion}"
+    setoutpath "$INSTDIR"
 
     writeregstr hkcu "Software\SwiffOut" "InstallDir" $INSTDIR
 
