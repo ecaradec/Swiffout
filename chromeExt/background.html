@@ -1,8 +1,8 @@
 <html>
     <script>
-        var ALL_IN_ONE_VERSION=true;
-        if(!ALL_IN_ONE_VERSION && localStorage["firstLaunch"]!=false) {
-            chrome.tabs.create({url:"http://swiffout.com/welcome-chrome.html"});
+        var ALL_IN_ONE_VERSION=false;
+        if(!ALL_IN_ONE_VERSION && localStorage["firstLaunch"]==undefined) {
+            chrome.tabs.create({url:"http://swiffout.com/desktop-setup.html"});
             localStorage["firstLaunch"]=false;
         }
 
