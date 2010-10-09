@@ -1,4 +1,4 @@
-task :all, [:version]=> [:chromeExt, :firefoxExt, :engine, :nsis, :copy] do
+task :all, [:version]=> [:engine, :chromeExt, :firefoxExt, :nsis, :copy] do
     puts "done"
 end
 
