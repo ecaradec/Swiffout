@@ -12,8 +12,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2">
 			<Tool
@@ -34,7 +34,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/regProtocol.dll"
 				LinkIncremental="2"
-				ModuleDefinitionFile="regprotocol.def"
+				ModuleDefinitionFile="regProtocol.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/regProtocol.pdb"
 				SubSystem="2"
@@ -58,8 +58,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2">
 			<Tool
@@ -81,6 +81,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/regProtocol.dll"
 				LinkIncremental="1"
+				ModuleDefinitionFile="regProtocol.def"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
 				OptimizeReferences="2"

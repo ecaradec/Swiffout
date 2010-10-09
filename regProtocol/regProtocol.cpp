@@ -105,9 +105,8 @@ void NPDeallocate(NPObject *npobj) {
 }
 void NPInvalidate(NPObject *npobj) {
 }
-bool NPHasMethod(NPObject *npobj, NPIdentifier name) {
-    char *utf8name=g_npnFuncs.utf8fromidentifier(name);    
-    return true;    
+bool NPHasMethod(NPObject *npobj, NPIdentifier name) {    
+    char *utf8name=g_npnFuncs.utf8fromidentifier(name);  
     if(strcmp("playSwf", utf8name)==0)
         return true;
     return false;
@@ -121,7 +120,7 @@ bool NPInvoke(NPObject *npobj, NPIdentifier name, const NPVariant *args, uint32_
         
         CStringA cmdLine;
         cmdLine.Format("swiffout:swiffout_href=%s,swiffout_width=320,swiffout_height=200,swiffout_flashvars=%s", swf, flashVars);
-        ShellExecute(0, 0, GetModuleDirectory()+"\\"+filename, cmdLine, 0, SW_SHOWNORMAL);
+        ShellExecute(0, 0, GetModuleDirectory()+"\\swiffoutrunner.exe", cmdLine, 0, SW_SHOWNORMAL);
         return true;
     }
     return false;
@@ -203,20 +202,7 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
     RegSetValueEx(hkey, "url protocol", 0, REG_SZ, (BYTE*)"", 0);
     RegCloseKey(hkey);
 
-    HMODULE hmod=GetModuleHandle("npprotocol.dll");
-    char filename[MAX_PATH+1];
-    GetModuleFileNameA(hmod, filename, sizeof(filename));
-    
-    char *lastSlash=strrchr(filename, '\\');
-    if(!lastSlash)
-        return false;
-
-    *lastSlash=0;
-
-    char buff[MAX_PATH+1];
-    sprintf(buff, "\"%s\\%s\" \"%%1\"", filename, "swiffoutrunner.exe");
-
-    RegSetValue(HKEY_CURRENT_USER, "Software\\Classes\\swiffout\\shell\\open\\command", REG_SZ, buff, -1);
+    RegSetValue(HKEY_CURRENT_USER, "Software\\Classes\\swiffout\\shell\\open\\command", REG_SZ, GetModuleDirectory()+"swiffoutrunner.exe", -1);
 
     if(pFuncs == NULL)
         return NPERR_INVALID_FUNCTABLE_ERROR;
@@ -239,7 +225,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                        LPVOID lpReserved
 					 )
 {
-    g_hModule=hModule;
     return TRUE;
 }
 

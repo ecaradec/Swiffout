@@ -67,14 +67,16 @@ task :firefoxExt, [:version] do |t,args|
 end
 
 task :chromeExt, [:version] do |t,args|
-    puts "building chrome ext..."
+    require 'crxmake'
 
+    puts "building chrome ext..."
+    
     File.open("chromeExt/manifest.json","w+") do |f| f<<
 %{
 {
   "name": "SwiffOut",
   "version": "__VERSION__",
-  "description": "SwiffOut - Play flash games real fullscreen.",
+  "description": "SwiffOut - Play flash games in full screen without slowing down",
   "browser_action": {
     "default_icon": "icon.png"
   },
@@ -86,30 +88,30 @@ task :chromeExt, [:version] do |t,args|
       "run_at": "document_start",
       "all_frames": true
   } ],
+  "plugins": [ {
+      "path": "plugin/npprotocol.dll",
+      "public": true
+   } ],
   "background_page": "background.html"
 }
 }.gsub(/__VERSION__/,args.version)
     end
 
+    FileUtils.mkdir_p "chromeExt/plugin"
+    
+    FileUtils.cp "release/regProtocol.dll", "chromeExt/plugin/npprotocol.dll"
+    FileUtils.cp "release/swiffoutrunner.exe", "chromeExt/plugin/swiffoutrunner.exe"
+
+    # all in one version (for google website )
     FileUtils.cp "chromeExt/background.html", "background.html.bak1"
     txt=File.read("chromeExt/background.html");
-    File.open("chromeExt/background.html","w+") do |f|
-        f.puts txt.gsub(/var ALL_IN_ONE_VERSION=.*$/, "var ALL_IN_ONE_VERSION=false;")
-    end
 
-    require 'crxmake'
-    # create crx
     CrxMake.zip(
         :ex_dir => "chromeExt",
-        :crx_output => "build/chromeExt.zip"
+        :zip_output => "build/chromeExt.zip"
     )
 
-    File.open("chromeExt/background.html","w+") do |f|
-        f.puts txt.gsub(/var ALL_IN_ONE_VERSION=.*$/, "var ALL_IN_ONE_VERSION=true;")
-    end
-
-    require 'crxmake'
-    # create crx
+    # embeded version
     CrxMake.make(
         :ex_dir => "chromeExt",
         :pkey   => "chromeExt.pem",
