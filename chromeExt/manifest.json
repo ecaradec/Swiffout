@@ -14,5 +14,9 @@
       "run_at": "document_start",
       "all_frames": true
   } ],
-  "background_page": "background.html"
+  "background_page": "background.html",
+  "plugins": [ {
+      "path": "plugin/npprotocol.dll",
+      "public": true
+   } ]
 }
