@@ -9,13 +9,21 @@
         var swfList=[];
         function runBestSWF() {
             swfList.sort(function(a,b) { return b.width*b.height-a.width*a.height; });
-
-            document.getElementById("pluginId").playSwf(swfList[0].src, swfList[0].flashVars);
-            
+            runSWF(swfList[0]);
             chrome.tabs.sendRequest(lastTab.id, {msg:"navigate", href:"http://swiffout.com/cpu-preservation.html"}, function(response) {});
         }
 
-        chrome.browserAction.onClicked.addListener(function(tab) {            
+        function runSWF(swf) {
+            document.getElementById("pluginId").playSwf(swf.src, swf.flashVars||"");
+        }
+
+        function collectSWF(swf) {
+            if(TID!=undefined) clearTimeout(TID);
+            TID=setTimeout(runBestSWF, 1000);
+            swfList.push(swf);
+        }
+
+        chrome.browserAction.onClicked.addListener(function(tab) {
             lastTab=tab;
             swfList=[];
             chrome.tabs.sendRequest(tab.id, {msg: "findSwf"}, function(response) {});
@@ -24,12 +32,12 @@
         var TID;
         chrome.extension.onRequest.addListener(
             function(request, sender, sendResponse) {
-                if(TID!=undefined) clearTimeout(TID);
-                TID=setTimeout(runBestSWF, 1000);
-                swfList.push(request);
+                if(request.method=="run") {
+                    runSWF(request);
+                } else if(request.method=="collect") {
+                    collectSWF(request);
+                }
             });
-        
     </script>
-
     <embed type="application/x-swiffout" id="pluginId">
 </html>
