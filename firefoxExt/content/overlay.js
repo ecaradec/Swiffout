@@ -33,67 +33,55 @@ swiffout = {
               }
             }
             catch(e) { }
-        }
+        }       
+
+       var self=this;
+       gBrowser.addEventListener("swiffout.fullscreen", function(ev)  {
+           var e=ev.target;
+           var src=self.getSrc(e);
+           var flashvars=e.getAttribute('flashvars');
+           
+           if(/^http:\/\/(www\.|)swiffoutgames\.com\//.test(src))
+               self.runSwf(src,flashvars);
+       },false,true);
+
+       gBrowser.addEventListener("load", function(ev)  {
+           if(ev.target.body) {
+                var swiffoutNode=ev.target.createElement("div");
+                swiffoutNode.setAttribute("id", "swiffout");
+                ev.target.body.appendChild(swiffoutNode);
+           }
+       },true);
+    },
+    runSwf:function(src,flashvars) {
+        var extensionPath = Components.classes["@mozilla.org/extensions/manager;1"].  
+            getService(Components.interfaces.nsIExtensionManager).  
+            getInstallLocation("swiffout@grownsoftware.com"). // guid of extension  
+            getItemLocation("swiffout@grownsoftware.com"); 
+
+        // create an nsILocalFile for the executable
+        var file = Components.classes["@mozilla.org/file/local;1"]
+                             .createInstance(Components.interfaces.nsILocalFile);
+        file.initWithPath(extensionPath.path+"\\plugins\\swiffoutrunner.exe");
+
+        // create an nsIProcess
+        var process = Components.classes["@mozilla.org/process/util;1"]
+                                .createInstance(Components.interfaces.nsIProcess);
+        process.init(file);
+
+        // Run the process.
+        // If first param is true, calling thread will be blocked until
+        // called process terminates.
+        // Second and third params are used to pass command-line arguments
+        // to the process.
+        var args = ["swiffout:swiffout_href="+src+",swiffout_width=640,swiffout_height=480,swiffout_flashvars="+flashvars];
+        process.run(false, args, args.length);
     },
     onMenuItemCommand: function(e) {        
+        var self=this;
         function log(msg) {
             var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
             consoleService.logStringMessage(""+msg);
-        }
-
-        function getSrc(e) {
-            var src=e.getAttribute("data") || e.src || e.getAttribute("Movie");
-            
-            var l=gBrowser.contentDocument.location;
-            if(/^\//.test(src))
-                src=l.protocol+"//"+l.hostname+src;
-            else if(/^http:/.test(src) || /^https:/.test(src))
-                src=src;
-            else
-                src=l.href.substring(0,l.href.lastIndexOf("/"))+"/"+src;
-
-            return src;
-        }
-        
-
-        function getEmbedFlashVars(o) {
-            var v=o.getAttribute("flashvars")
-            var m1=o.innerHTML.match(/flashVars="(.*?)"/i);
-            var m2=o.innerHTML.match(/flashVars='(.*?)'/i);
-
-            if(!v) {
-                if(m1) {
-                    v=m1[1];
-                } else if(m2) {
-                    v=m2[1];
-                }
-            }
-
-            v=v.replace(/&amp;/g,"&");
-            return v;
-        }
-
-        function getObjectFlashVars(o) {
-            var v=o.getAttribute("flashvars")
-            var m1=o.innerHTML.match(/name="flashVars" +value="([^<>"]*?)"/i);
-            var m2=o.innerHTML.match(/value="([^<>"]*?)" +name="flashVars"/i);
-            var m3=o.innerHTML.match(/name='flashVars' +value='([^<>"]*?)'/i);
-            var m4=o.innerHTML.match(/value='([^<>"]*?)' +name='flashVars'/i);
-
-            if(!v) {
-                if(m1) {
-                    v=m1[1];
-                } else if(m2) {
-                    v=m2[1];
-                } else if(m3) {
-                    v=m3[1];
-                } else if(m4) {
-                    v=m4[1];
-                }
-            }
-
-            v=v.replace(/&amp;/g,"&").replace(/&gt;/g,">").replace(/&lt;/g,"<");
-            return v;
         }
 
         var swfList=[];
@@ -101,21 +89,19 @@ swiffout = {
             var items=d.getElementsByTagName("embed");            
             for(var e=0;e<items.length;e++) {
                 swfList.push({
-                    src:getSrc(items[e]),
-                    orgSrc:items[e].getAttribute("data") || items[e].src || items[e].getAttribute("Movie"),
+                    src:self.getSrc(items[e]),
                     width:items[e].width,
                     height:items[e].height,
-                    flashvars:getEmbedFlashVars(items[e])
+                    flashvars:self.getParam(items[e], "flashvars")
                 });
             }
             var items=d.getElementsByTagName("object");
             for(var e=0;e<items.length;e++) {
                 swfList.push({
-                    src:getSrc(items[e]),
-                    orgSrc:items[e].getAttribute("data") || items[e].src || items[e].getAttribute("Movie"),
+                    src:self.getSrc(items[e]),
                     width:items[e].width,
                     height:items[e].height,
-                    flashvars:getObjectFlashVars(items[e])
+                    flashvars:self.getParam(items[e], "flashvars")
                 });
             }
         }
@@ -129,15 +115,29 @@ swiffout = {
 
         swfList.sort(function(a,b) { return (a.width*a.height)<(b.width*b.height); });
 
-        //for(var i=swfList.length-1;i>=0;i--) {
-        //    log("orgSrc :"+swfList[i].orgSrc+",src : "+swfList[i].src+",width : "+swfList[i].width+",height : "+swfList[i].height+",flashvars : "+swfList[i].flashvars);
-        //}
-        //alert("swiffout:swiffout_href="+swfList[0].src+",swiffout_width="+swfList[0].width+",swiffout_height="+swfList[0].height+",swiffout_flashvars="+swfList[0].flashvars);
-        gBrowser.contentDocument.location.href="swiffout:swiffout_href="+swfList[0].src+",swiffout_width="+swfList[0].width+",swiffout_height="+swfList[0].height+",swiffout_flashvars="+swfList[0].flashvars;
+        this.runSwf(swfList[0].src, swfList[0].flashvars);
+        gBrowser.contentDocument.location.href="http://swiffout.com/cpu-preservation.html";
+    },
+    getSrc:function(e) {
+        var src=e.getAttribute('data') || e.getAttribute('src') || this.getParam(e,'movie|data|src|code|filename|url');
+        
+        var l=e.ownerDocument.location;
+        if(/^\//.test(src))
+            src=l.protocol+"//"+l.hostname+src;
+        else if(/^http:/.test(src) || /^https:/.test(src))
+            src=src;
+        else
+            src=l.href.substring(0,l.href.lastIndexOf("/"))+"/"+src;
 
-        setTimeout(function() {
-            gBrowser.contentDocument.location.href="http://swiffout.com/cpu-preservation.html";
-        }, 100);
+        return src;
+    },
+    getParam:function(e,n) {
+        var v = '', r = new RegExp('^('+n+')$', 'i');
+        var param = e.getElementsByTagName('param');
+        for(var i = 0, p; p = param[i]; i++){
+            if(p.hasAttribute('name') && p.getAttribute('name').match(r)){v = p.getAttribute('value'); break};
+        }
+        return v;
     }
 };
 window.addEventListener("load", function(e) { swiffout.onLoad(e); }, false);

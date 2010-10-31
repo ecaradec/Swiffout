@@ -1,18 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
- xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-  <Description about="urn:mozilla:install-manifest">
-    <em:id>swiffout@grownsoftware.com</em:id>
-    <em:name>SwiffOut</em:name>
-    <em:version>1.0.0.0</em:version>
-    <em:creator>GrownSoftware</em:creator>
-    <em:description>Play flash games real fullscreen</em:description>
-    <em:targetApplication>
-      <Description>
-        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- firefox -->
-        <em:minVersion>1.5</em:minVersion>
-        <em:maxVersion>3.6.*</em:maxVersion>
-      </Description>
-    </em:targetApplication>
-  </Description>
-</RDF>
+<?xml version="1.0"?>
+<RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+         xmlns:NC="http://home.netscape.com/NC-rdf#"
+         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <RDF:Description RDF:about="urn:mozilla:install-manifest"
+                   em:id="swiffout@grownsoftware.com"
+                   em:name="SwiffOut"
+                   em:version="1.0.0.0"
+                   em:creator="GrownSoftware"
+                   em:description="Full screen flash gaming without horrible lag">
+    <em:targetApplication RDF:resource="rdf:#$mdrO.2"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="rdf:#$mdrO.2"
+                   em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
+                   em:minVersion="1.5"
+                   em:maxVersion="4.0.*" />
+</RDF:RDF>

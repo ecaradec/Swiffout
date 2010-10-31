@@ -17,7 +17,7 @@ function makeMsg(m, o) {
     else
         src=l.href.substring(0,l.href.lastIndexOf("/"))+"/"+src;
 
-    return {method:m, src:src, flashVars:o.getAttribute('flashvars'), width:o.width, height:o.height };
+    return {method:m, src:src, flashVars:o.getAttribute('flashvars') };
 }
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
@@ -44,8 +44,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     }
 });
 
-document.addEventListener("fullscreen", function(e) {
-    chrome.extension.sendRequest(makeMsg("run", e.srcElement));
+document.addEventListener("swiffout.fullscreen", function(e) {
+    var msg=makeMsg("run", e.srcElement);
+    if(/^http:\/\/(www\.|)swiffoutgames\.com\//.test(msg.src)) {
+        chrome.extension.sendRequest(msg);
+    }
 });
 
 // swiffout://swiffout_href=http://chat.kongregate.com/gamez/0006/6688/live/Creeper-kong-0325.swf?kongregate_game_version=1261618203,swiffout_width=700,swiffout_height=525

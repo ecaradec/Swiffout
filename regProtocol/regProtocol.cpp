@@ -197,12 +197,12 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 
 NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
 {
-    HKEY hkey;
+    /*HKEY hkey;
     RegOpenKey(HKEY_CURRENT_USER, "Software\\Classes\\swiffout", &hkey);
     RegSetValueEx(hkey, "url protocol", 0, REG_SZ, (BYTE*)"", 0);
     RegCloseKey(hkey);
 
-    RegSetValue(HKEY_CURRENT_USER, "Software\\Classes\\swiffout\\shell\\open\\command", REG_SZ, GetModuleDirectory()+"swiffoutrunner.exe", -1);
+    RegSetValue(HKEY_CURRENT_USER, "Software\\Classes\\swiffout\\shell\\open\\command", REG_SZ, GetModuleDirectory()+"swiffoutrunner.exe", -1);*/
 
     if(pFuncs == NULL)
         return NPERR_INVALID_FUNCTABLE_ERROR;
