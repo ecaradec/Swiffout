@@ -48,7 +48,7 @@ task :firefoxExt, [:version] do |t,args|
     FileUtils.rm_r "tmp/firefoxExt", :force=>true
     FileUtils.mkdir_p "tmp/firefoxExt/chrome"
     FileUtils.cp_r "firefoxExt/defaults","tmp/firefoxExt/"
-    FileUtils.mkdir_p "tmp/firefoxExt/plugins"
+    FileUtils.mkdir_p "firefoxExt/plugins"
     FileUtils.cp "release/swiffoutrunner.exe", "firefoxExt/plugins/swiffoutrunner.exe"
     FileUtils.cp_r "firefoxExt/plugins","tmp/firefoxExt/"
     FileUtils.cp "firefoxExt/install.rdf","tmp/firefoxExt/install.rdf"

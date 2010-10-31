@@ -7,7 +7,7 @@
 
 
  /* File created by MIDL compiler version 6.00.0347 */
-/* at Sat Oct 02 17:25:10 2010
+/* at Sun Oct 31 16:11:26 2010
  */
 /* Compiler settings for ieExt.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)
