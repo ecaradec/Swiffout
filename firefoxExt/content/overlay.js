@@ -10,6 +10,7 @@ swiffout = {
 
        //First Run?
        if(!nsIPrefBranchObj.prefHasUserValue("toolbarbutton-initialized")) {
+            gBrowser.addTab("http://swiffout.com/welcome.html");
             nsIPrefBranchObj.setBoolPref("toolbarbutton-initialized",true);
             try {
               var firefoxnav = document.getElementById("nav-bar");

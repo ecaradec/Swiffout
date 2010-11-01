@@ -15,7 +15,7 @@
     outfile "..\SwiffOut Setup.exe"
 
     ;request application privileges for windows vista
-    requestexecutionlevel highest
+    requestexecutionlevel user
 
 ;--------------------------------
 ;interface settings
@@ -51,22 +51,8 @@ section
 
     file ..\release\swiffoutrunner.exe
 
-    ;ieExt
-!ifdef ADDONS
     file ..\release\ieExt.dll
     RegDLL  "$OUTDIR\ieExt.dll"
-
-    ; firefoxExt
-    RMDir /r "$OUTDIR\firefoxExt" ; to clean folder modification time
-    file /r ..\firefoxExt
-    writeregstr hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com" "$OUTDIR\firefoxExt"
-
-    ; chromeExt
-    file ..\chromeExt.crx
-
-    writeregstr hkcu "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "path" "$OUTDIR\chromeExt.crx"
-    writeregstr hkcu "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd" "version" ${chromeExtVersion}
-!endif
 
     createdirectory "$smprograms\swiffout"
     createshortcut "$smprograms\swiffout\swiffout uninstall.lnk" "$INSTDIR\uninstall.exe"
@@ -99,14 +85,7 @@ section "uninstall"
 
     deleteregkey hkcu "software\classes\swiffout"
     deleteregkey hkcu "software\swiffout"
-!ifdef ADDONS
-    ;chromeExt
-    deleteregkey hkcu "Software\Google\Chrome\Extensions\kfbkdggicneacfcmlnnnaipijjabecmd"
-
-    ;firefoxExt
-    deleteregvalue hkcu "Software\Mozilla\Firefox\Extensions" "swiffout@grownsoftware.com"
 
     ;ieExt
     UnRegDLL $INSTDIR\ieExt.dll
-!endif
 sectionend
