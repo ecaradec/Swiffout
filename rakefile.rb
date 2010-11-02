@@ -106,7 +106,7 @@ task :chromeExt, [:version] do |t,args|
 {
   "name": "SwiffOut",
   "version": "__VERSION__",
-  "description": "SwiffOut - Play flash games in full screen without slowing down",
+  "description": "Full screen flash gaming without horrible lag",
   "browser_action": {
     "default_icon": "icon.png"
   },
