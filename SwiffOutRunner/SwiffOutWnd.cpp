@@ -432,7 +432,7 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     m_readyState=0;
 
     DWORD enableEscKey=BST_CHECKED;
-    DWORD startFullscreen=0;
+    DWORD startFullscreen=BST_CHECKED;
 
     //
     // read registry
