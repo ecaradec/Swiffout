@@ -1,23 +1,19 @@
-The SwiffOut firefox extension code is published under the mozilla licence.
+The SwiffOut firefox extension code is published under the mozilla public license.
 
-SwiffOutRunner.exe is part of a larger work as described in the mozilla licence :
+SwiffOutRunner.exe is part of a larger work as described in the mozilla license :
 
 LICENSE 
 -------------- 
 Grown Software hereby gives you a non-exclusive license to use the SwiffOut. 
-For evaluation, the license is granted, and is time-limited.  
-For registered release you have to pay a license fee, by following instructions prompted by the program. 
  
 You may:  
 - use the Software on any single computer;  
-- use the Software on a second computer so long as the primary user of each copy is the same person and more than one copy is not simultaneously;  
 - copy the Software for archival purposes, provided any copy contains all of the original Software's proprietary notices.  
  
 You may not:  
 - permit other individuals to use the Software except under the terms listed above;  
 - modify, translate, reverse engineer, decompile, disassemble (except to the extent applicable laws specifically prohibit such restriction),  
-- create derivative works based on the Software;  
-- copy the Software (except as specified above);  
+- create derivative works based on the Software without explicit permission;  
 - rent, lease, transfer or otherwise transfer rights to the Software;  
 - remove any proprietary notices or labels on the Software.  
  
