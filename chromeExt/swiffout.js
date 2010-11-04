@@ -17,7 +17,7 @@ function makeMsg(m, o) {
     else
         src=l.href.substring(0,l.href.lastIndexOf("/"))+"/"+src;
 
-    return {method:m, src:src, flashVars:o.getAttribute('flashvars') };
+    return {method:m, src:src, flashVars:getParam(o, 'flashvars'), width:o.width||o.getAttribute("width"), height:o.height||o.getAttribute("height") };
 }
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {

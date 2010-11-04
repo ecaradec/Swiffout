@@ -91,8 +91,8 @@ swiffout = {
             for(var e=0;e<items.length;e++) {
                 swfList.push({
                     src:self.getSrc(items[e]),
-                    width:items[e].width,
-                    height:items[e].height,
+                    width:items[e].width||items[e].getAttribute("width"),
+                    height:items[e].height||items[e].getAttribute("height"),
                     flashvars:self.getParam(items[e], "flashvars")
                 });
             }
@@ -100,8 +100,8 @@ swiffout = {
             for(var e=0;e<items.length;e++) {
                 swfList.push({
                     src:self.getSrc(items[e]),
-                    width:items[e].width,
-                    height:items[e].height,
+                    width:items[e].width||items[e].getAttribute("width"),
+                    height:items[e].height||items[e].getAttribute("height"),
                     flashvars:self.getParam(items[e], "flashvars")
                 });
             }
