@@ -125,8 +125,7 @@ task :chromeExt, [:version] do |t,args|
   }
   ],
   "plugins": [ {
-      "path": "plugin/npprotocol.dll",
-      "public": true
+      "path": "plugin/npprotocol.dll"
    } ],
   "background_page": "background.html"
 }
