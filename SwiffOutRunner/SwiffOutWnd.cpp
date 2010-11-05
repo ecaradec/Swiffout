@@ -568,7 +568,7 @@ void SwiffOutWnd::SetFullscreen(bool b) {
         BOOL b;
         while(1) {
             dm.dmSize=sizeof(DEVMODE);
-            if((b=EnumDisplaySettings(0, mode, &dm)) && dm.dmBitsPerPel==32) {
+            if((b=EnumDisplaySettings(0, mode, &dm)) && dm.dmBitsPerPel==32 && ((dm.dmFields&DM_DISPLAYORIENTATION!=0) && dm.dmDisplayOrientation==DMDO_DEFAULT) ) {
 
                 CString str;
                 //str.Format(L"%dx%d", dm.dmPelsWidth, dm.dmPelsHeight);
