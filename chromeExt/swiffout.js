@@ -17,7 +17,11 @@ function makeMsg(m, o) {
     else
         src=l.href.substring(0,l.href.lastIndexOf("/"))+"/"+src;
 
-    return {method:m, src:src, flashVars:getParam(o, 'flashvars'), width:o.width||o.getAttribute("width"), height:o.height||o.getAttribute("height") };
+    var cs=window.getComputedStyle(o);
+    var w=parseInt(cs.width,10);
+    var h=parseInt(cs.height,10);
+
+    return {method:m, src:src, flashVars:getParam(o, 'flashvars'), width:w, height:h };
 }
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
