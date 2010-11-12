@@ -3,8 +3,8 @@
          xmlns:NC="http://home.netscape.com/NC-rdf#"
          xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
-                   em:id="swiffout@grownsoftware.com"
-                   em:name="SwiffOut"
+                   em:id="swiffoutdev@grownsoftware.com"
+                   em:name="SwiffOutDev"
                    em:version="1.0.0.0"
                    em:creator="GrownSoftware"
                    em:description="Full screen flash gaming without horrible lag">

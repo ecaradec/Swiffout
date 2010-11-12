@@ -85,25 +85,28 @@ swiffout = {
             consoleService.logStringMessage(""+msg);
         }
 
+        function getEltDesc(e) {
+            var cs=window.getComputedStyle(e,null);
+            var w=parseInt(cs.width,10);
+            var h=parseInt(cs.height,10);
+
+            return {
+                src:self.getSrc(e),
+                width:w,
+                height:h,
+                flashvars:self.getParam(e, "flashvars")
+            }
+        }
+
         var swfList=[];
         function parseDocument(d) {
             var items=d.getElementsByTagName("embed");            
             for(var e=0;e<items.length;e++) {
-                swfList.push({
-                    src:self.getSrc(items[e]),
-                    width:items[e].width||items[e].getAttribute("width"),
-                    height:items[e].height||items[e].getAttribute("height"),
-                    flashvars:self.getParam(items[e], "flashvars")
-                });
+                swfList.push(getEltDesc(items[e]));
             }
             var items=d.getElementsByTagName("object");
             for(var e=0;e<items.length;e++) {
-                swfList.push({
-                    src:self.getSrc(items[e]),
-                    width:items[e].width||items[e].getAttribute("width"),
-                    height:items[e].height||items[e].getAttribute("height"),
-                    flashvars:self.getParam(items[e], "flashvars")
-                });
+                swfList.push(getEltDesc(items[e]));
             }
         }
 
