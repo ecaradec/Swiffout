@@ -261,7 +261,7 @@ bool QAssertHR(HRESULT hr, char *file, int line) {
 bool QAssert(bool b, char *msgt, char *file, int line) {
     if(!b){
         CString msg;
-        msg.Format(_T("Line : %s(%d)\n\nReason : %s\nThe application will close."), CString(file), line, msgt);
+        msg.Format(_T("The application will close.\n\nReason : %s\n\nLine : %s(%d)"), CString(msgt), CString(file), line);
         MessageBox(g_mainHWND, msg, _T("SwiffOut Initialisation Failed"), MB_OK|MB_ICONERROR);
     }
     return b;
@@ -377,20 +377,36 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     }*/
 
     // detect the size
-    HINTERNET hIO=InternetOpen(L"Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US))", INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0);    
+    HINTERNET hIO=InternetOpen(L"Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)", INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0);    
     
-    HINTERNET hOUrl=InternetOpenUrlA(hIO, swf, 0, 0, 0, 0);   
+    HINTERNET hOUrl=InternetOpenUrlA(hIO, swf, 0, 0, 0, 0);
+    if(!QASSERT(hOUrl!=0, "Impossible to download SWF file. No connection ?")) {
+        return PostQuitMessage(0);
+    }
+
+    if(!QASSERT(hOUrl!=INVALID_HANDLE_VALUE, "InternetOpenUrlA failed")) {
+        return PostQuitMessage(0);
+    }
     
     DWORD read=0;
     char sig[3];
     InternetReadFile(hOUrl, sig, sizeof(sig), &read);
-
+    if(!QASSERT(read==sizeof(sig), "Read SWF signature failed")) {
+        return PostQuitMessage(0);
+    }
+    
     unsigned char version;
     InternetReadFile(hOUrl, &version, sizeof(version), &read);
+    if(!QASSERT(read==sizeof(version), "Read SWF version failed")) {
+        return PostQuitMessage(0);
+    }
 
     unsigned int filelength;
     InternetReadFile(hOUrl, &filelength, sizeof(filelength), &read);
-    
+    if(!QASSERT(read==sizeof(filelength), "Read SWF filelength failed")) {
+        return PostQuitMessage(0);
+    }
+
     char *buff=0,*compressed=0;
     if(strncmp(sig,"CWS",3)==0) {
         compressed=(char*)malloc(min(filelength,250));
