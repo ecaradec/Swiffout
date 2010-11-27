@@ -64,6 +64,7 @@ task :firefoxExt, [:version] do |t,args|
                    em:version="#{args.version}"
                    em:creator="GrownSoftware"
                    em:description="Full screen flash gaming without horrible lag">
+    <em:unpack>true</em:unpack>
     <em:targetApplication RDF:resource="rdf:#$mdrO.2"/>
   </RDF:Description>
   <RDF:Description RDF:about="rdf:#$mdrO.2"

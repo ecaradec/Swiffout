@@ -55,28 +55,37 @@ swiffout = {
        },true);
     },
     runSwf:function(src,flashvars) {
-        var extensionPath = Components.classes["@mozilla.org/extensions/manager;1"].  
-            getService(Components.interfaces.nsIExtensionManager).  
-            getInstallLocation("swiffout@grownsoftware.com"). // guid of extension  
-            getItemLocation("swiffout@grownsoftware.com"); 
 
-        // create an nsILocalFile for the executable
-        var file = Components.classes["@mozilla.org/file/local;1"]
-                             .createInstance(Components.interfaces.nsILocalFile);
-        file.initWithPath(extensionPath.path+"\\plugins\\swiffoutrunner.exe");
+        var MY_ID="swiffout@grownsoftware.com";
 
-        // create an nsIProcess
-        var process = Components.classes["@mozilla.org/process/util;1"]
-                                .createInstance(Components.interfaces.nsIProcess);
-        process.init(file);
+        function getFile(rpath, fn) {
+            try {
+                AddonManager.getAddonByID(MY_ID, function(addon) {
+                    fn(addon.getResourceURI(rpath).QueryInterface(Components.interfaces.nsIFileURL).file);
+                });
+            } catch(e) {
+                fn(Components.classes["@mozilla.org/extensions/manager;1"].  
+                  getService(Components.interfaces.nsIExtensionManager).  
+                  getInstallLocation(MY_ID). // guid of extension  
+                  getItemFile(MY_ID, rpath)); 
+            }
+        }
 
-        // Run the process.
-        // If first param is true, calling thread will be blocked until
-        // called process terminates.
-        // Second and third params are used to pass command-line arguments
-        // to the process.
-        var args = ["swiffout:swiffout_href="+src+",swiffout_width=640,swiffout_height=480,swiffout_flashvars="+flashvars];
-        process.run(false, args, args.length);
+        getFile("plugins/swiffoutrunner.exe", function(file){
+            // create an nsIProcess
+            var process = Components.classes["@mozilla.org/process/util;1"]
+                                    .createInstance(Components.interfaces.nsIProcess);
+
+            process.init(file);
+
+            // Run the process.
+            // If first param is true, calling thread will be blocked until
+            // called process terminates.
+            // Second and third params are used to pass command-line arguments
+            // to the process.
+            var args = ["swiffout:swiffout_href="+src+",swiffout_width=640,swiffout_height=480,swiffout_flashvars="+flashvars];
+            process.run(false, args, args.length);
+        });
     },
     onMenuItemCommand: function(e) {        
         var self=this;
