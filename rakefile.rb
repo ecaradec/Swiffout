@@ -5,7 +5,6 @@ end
 task :copy, [:version] do |t,args|
     FileUtils.mkdir_p "build/#{args.version}"
     FileUtils.cp "build/SwiffOut Setup.exe", "build/#{args.version}/SwiffOut Setup.exe"
-    FileUtils.cp "build/SwiffOut Desktop Setup.exe", "build/#{args.version}/SwiffOut Desktop Setup.exe"
     FileUtils.cp "build/swiffout_gc.crx", "build/#{args.version}/swiffout_gc.crx"
     FileUtils.cp "build/swiffout_gc.zip", "build/#{args.version}/swiffout_gc.zip"
     FileUtils.cp "build/swiffout_ff.xpi", "build/#{args.version}/swiffout_ff.xpi"
@@ -20,9 +19,6 @@ task :nsis, [:version] do |t,args|
         f  << "!define productVersion \"#{args.version}\""
         f  << "!define chromeExtVersion \"#{args.version}\""
     end
-
-    sh '"c:\Program Files\NSIS\makensis.exe" setup/setup.nsi'
-    FileUtils.mv "SwiffOut Setup.exe","build/SwiffOut Desktop Setup.exe"
 
     sh '"c:\Program Files\NSIS\makensis.exe" /DADDONS setup/setup.nsi'
     FileUtils.mv "SwiffOut Setup.exe","build/SwiffOut Setup.exe"
