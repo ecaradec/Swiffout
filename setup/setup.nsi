@@ -25,7 +25,7 @@
 ;--------------------------------
 ;pages    
     !insertmacro mui_page_welcome
-    !insertmacro mui_page_license "license.txt"
+    ;!insertmacro mui_page_license "license.txt"
     ;!insertmacro mui_page_components
     !insertmacro mui_page_instfiles
     
@@ -57,10 +57,6 @@ section
     createdirectory "$smprograms\swiffout"
     createshortcut "$smprograms\swiffout\swiffout uninstall.lnk" "$INSTDIR\uninstall.exe"
     createshortcut "$smprograms\swiffout\swiffout help.lnk" "http://swiffout.com/help.html" "" "$OUTDIR\swiffoutrunner.exe"
-
-    ;store installation folder
-    writeregstr hkcu "software\classes\swiffout" "url protocol" ""
-    writeregstr hkcu "software\classes\swiffout\shell\open\command" "" '"$OUTDIR\swiffoutrunner.exe" "%1"'
     
     ;create uninstaller
     writeuninstaller "$INSTDIR\uninstall.exe"
@@ -82,9 +78,6 @@ section "uninstall"
     delete "$INSTDIR\uninstall.exe"
 
     rmdir /r "$INSTDIR"
-
-    deleteregkey hkcu "software\classes\swiffout"
-    deleteregkey hkcu "software\swiffout"
 
     ;ieExt
     UnRegDLL $INSTDIR\ieExt.dll

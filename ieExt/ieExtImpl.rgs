@@ -25,3 +25,15 @@ HKCR
 		}
 	}
 }
+
+HKLM {
+ SOFTWARE {
+  Microsoft {
+   Windows {
+    CurrentVersion {
+     Explorer {
+      'Browser Helper Objects' {
+       ForceRemove {9BA9E4C9-1147-4C81-B45E-DF966D095543} = s 'SurfMatch' {
+	    val NoExplorer = d '1'
+       }
+} } } } } } }

@@ -501,6 +501,7 @@ void SwiffOutWnd::Create(CHAR *swf, CHAR *flashVars, int width, int height) {
     m_borderHeight=m_rWin.Height()-rClient.Height();        
     
     if(!QASSERT_HR(OleCreate(ShockwaveFlashObjects::CLSID_ShockwaveFlash, IID_IOleObject, OLERENDER_DRAW, 0, (IOleClientSite *)this, (IStorage *)this, (void **)&pOO))) {
+        ShellExecute(0, 0, L"http://swiffout.com/activex-not-installed", 0, 0, SW_SHOW);
         return PostQuitMessage(0);
     }
 

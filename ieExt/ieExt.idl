@@ -17,6 +17,19 @@ import "ocidl.idl";
 ]
 interface IieExtImpl : IDispatch{
 };
+
+[
+	object,
+	uuid(99D600CF-0883-4c7b-9B24-1D06F03D0118),
+	dual,
+	nonextensible,
+	helpstring("ICallbackFunction Interface"),
+	pointer_default(unique)
+]
+interface ICallbackFunction : IDispatch {
+    [id(0),defaultbind] HRESULT onInvoke([in] VARIANT e);
+};
+
 [
 	uuid(3E784728-920C-4C54-9954-BE998D20E299),
 	version(1.0),
@@ -25,12 +38,15 @@ interface IieExtImpl : IDispatch{
 library ieExtLib
 {
 	importlib("stdole2.tlb");
+    
+    interface ICallbackFunction;
+
 	[
 		uuid(9BA9E4C9-1147-4C81-B45E-DF966D095543),
 		helpstring("ieExtImpl Class")
 	]
 	coclass ieExtImpl
 	{
-		[default] interface IieExtImpl;
+		[default] interface IieExtImpl;        
 	};
 };
