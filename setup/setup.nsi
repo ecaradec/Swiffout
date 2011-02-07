@@ -15,7 +15,8 @@
     outfile "..\SwiffOut Setup.exe"
 
     ;request application privileges for windows vista
-    requestexecutionlevel user
+    ;need full priviledge for registering BHO
+    ;requestexecutionlevel user
 
 ;--------------------------------
 ;interface settings
