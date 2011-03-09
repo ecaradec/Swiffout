@@ -16,7 +16,7 @@ task :nsis, [:version] do |t,args|
     File.open("setup/VersionNb.nsh","w+") do |f|
         f << "VIAddVersionKey \"FileVersion\" \"#{args.version}\"\n"
         f << "VIProductVersion \"#{args.version}\"\n"        
-        f  << "!define productVersion \"#{args.version}\""
+        f  << "!define productVersion \"#{args.version}\"\n"
         f  << "!define chromeExtVersion \"#{args.version}\""
     end
 
@@ -66,7 +66,7 @@ task :firefoxExt, [:version] do |t,args|
   <RDF:Description RDF:about="rdf:#$mdrO.2"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
                    em:minVersion="1.5"
-                   em:maxVersion="4.0b8pre" />
+                   em:maxVersion="4.0b12" />
 </RDF:RDF>
     HEREDOC
     end

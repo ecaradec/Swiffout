@@ -1,6 +1,6 @@
 swiffout = {
     onLoad: function() {
-        // initialization code
+                // initialization code
         this.initialized = true;
         this.strings = document.getElementById("swiffout-strings");
 
@@ -10,7 +10,11 @@ swiffout = {
 
        //First Run?
        if(!nsIPrefBranchObj.prefHasUserValue("toolbarbutton-initialized")) {
-            gBrowser.addTab("http://swiffout.com/welcome.html");
+            // when restarting firefox after install doesn't addTab
+            window.setTimeout(function() {
+               gBrowser.selectedTab=gBrowser.addTab("http://swiffout.com/welcome.html");
+            }, 1000);            
+            
             nsIPrefBranchObj.setBoolPref("toolbarbutton-initialized",true);
             try {
               var firefoxnav = document.getElementById("nav-bar");
