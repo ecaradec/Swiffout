@@ -35,7 +35,8 @@ task :engine, [:version] do |t,args|
         f << "#define _RELEASEDATESTR_ \"#{Time.now.strftime("%d %b %y")}\"\n"        
     end
 
-    sh '"C:/Program Files/Microsoft Visual Studio .NET 2002/Common7/IDE/devenv.com" swiffout.sln /Rebuild Release'
+    #sh '"C:/Program Files/Microsoft Visual Studio .NET 2002/Common7/IDE/devenv.com" swiffout.sln /Rebuild Release'
+    sh '"C:/Program Files (x86)/Microsoft Visual Studio 10.0/Common7/IDE/devenv.com" swiffout.sln /Rebuild Release'
 end
 
 task :firefoxExt, [:version] do |t,args|

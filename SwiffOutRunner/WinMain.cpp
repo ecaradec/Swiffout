@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#define _WIN32_WINNT 0x0400
 #include "resource.h"
 #include "CheckLicKey.h"
 #include "SwiffOutWnd.h"

@@ -1,6 +1,6 @@
 //include direct draw header (do not link ddraw.lib)
 #include <ddraw.h>
-#import "c:\\windows\\system32\\macromed\\flash\\flash.ocx" named_guids no_auto_exclude
+#import "C:\Windows\System32\Macromed\Flash\Flash10l.ocx" named_guids no_auto_exclude
 
 struct FlashWndSubclass;
 
