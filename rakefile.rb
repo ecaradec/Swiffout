@@ -141,6 +141,7 @@ task :chromeExt, [:version] do |t,args|
 
     CrxMake.zip(
         :ex_dir => "chromeExt",
+        :pkey   => "chromeExt.pem",
         :zip_output => "build/swiffout_gc.zip"
     )
 
