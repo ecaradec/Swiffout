@@ -102,7 +102,7 @@ task :chromeExt, [:version] do |t,args|
     File.open("chromeExt/manifest.json","w+") do |f| f<<
 %{
 {
-  "name": "SwiffOut",
+  "name": "SwiffOut Fullscreen Games",
   "version": "__VERSION__",
   "description": "Full screen flash gaming without horrible lag",
   "browser_action": {
