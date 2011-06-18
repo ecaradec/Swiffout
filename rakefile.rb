@@ -20,7 +20,7 @@ task :nsis, [:version] do |t,args|
         f  << "!define chromeExtVersion \"#{args.version}\""
     end
 
-    sh '"c:\Program Files\NSIS\makensis.exe" /DADDONS setup/setup.nsi'
+    sh '"C:\Program Files (x86)\NSIS\makensis.exe" /DADDONS setup/setup.nsi'
     FileUtils.mv "SwiffOut Setup.exe","build/SwiffOut Setup.exe"
 end
 
