@@ -10,7 +10,7 @@
         function runBestSWF() {
             swfList.sort(function(a,b) { return b.width*b.height-a.width*a.height; });
             runSWF(swfList[0]);
-            chrome.tabs.sendRequest(lastTab.id, {msg:"navigate", href:"http://swiffout.com/cpu-preservation.html"}, function(response) {});
+            chrome.tabs.sendRequest(lastTab.id, {msg:"navigate", href:"http://swiffout.com/cpu-preservation.html?swf="+encodeURIComponent(swfList[0].src)}, function(response) {});
         }
 
         function runSWF(swf) {

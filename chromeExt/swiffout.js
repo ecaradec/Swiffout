@@ -1,3 +1,5 @@
+var flashCSSQuery='embed[type*="application/x-shockwave-flash"],embed[src*=".swf"],object[type*="application/x-shockwave-flash"],object[codetype*="application/x-shockwave-flash"],object[src*=".swf"],object[codebase*="swflash.cab"],object[classid*="D27CDB6E-AE6D-11cf-96B8-444553540000"],object[classid*="d27cdb6e-ae6d-11cf-96b8-444553540000"],object[classid*="D27CDB6E-AE6D-11cf-96B8-444553540000"]';
+
 function getParam(e, n){
     var v = '', r = new RegExp('^('+n+')$', 'i');
     var param = e.getElementsByTagName('param');
@@ -20,7 +22,6 @@ function makeMsg(m, o) {
     var cs=window.getComputedStyle(o);
     var w=parseInt(cs.width,10);
     var h=parseInt(cs.height,10);
-
     return {method:m, src:src, flashVars:getParam(o, 'flashvars'), width:w, height:h };
 }
 
@@ -29,20 +30,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         var href="swiffout:";
         var swfList=[];
 
-        var embedList=document.getElementsByTagName('embed');
+        sendResponse({});
+        var embedList=document.querySelectorAll(flashCSSQuery);
         for(var i=0;i<embedList.length;i++) {
-            swfList.push(makeMsg("collect",embedList[i]));
+            chrome.extension.sendRequest(makeMsg("collect",embedList[i]));
         }
-
-        var objectList=document.getElementsByTagName('object');    
-        for(var i=0;i<objectList.length;i++) {
-            swfList.push(makeMsg("collect",objectList[i]));
-        }
-
-        for(var i=0;i<swfList.length;i++) {
-            sendResponse({});
-            chrome.extension.sendRequest(swfList[i]);
-        }    
     } else if(request.msg=="navigate") {
        window.location=request.href;
     }
