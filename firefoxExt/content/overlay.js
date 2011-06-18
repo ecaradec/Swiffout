@@ -93,6 +93,8 @@ swiffout = {
     },
     onMenuItemCommand: function(e) {        
         var self=this;
+        var flashCSSQuery='embed[type*="application/x-shockwave-flash"],embed[src*=".swf"],object[type*="application/x-shockwave-flash"],object[codetype*="application/x-shockwave-flash"],object[src*=".swf"],object[codebase*="swflash.cab"],object[classid*="D27CDB6E-AE6D-11cf-96B8-444553540000"],object[classid*="d27cdb6e-ae6d-11cf-96b8-444553540000"],object[classid*="D27CDB6E-AE6D-11cf-96B8-444553540000"]';
+
         function log(msg) {
             var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
             consoleService.logStringMessage(""+msg);
@@ -113,13 +115,9 @@ swiffout = {
 
         var swfList=[];
         function parseDocument(d) {
-            var items=d.getElementsByTagName("embed");            
-            for(var e=0;e<items.length;e++) {
-                swfList.push(getEltDesc(items[e]));
-            }
-            var items=d.getElementsByTagName("object");
-            for(var e=0;e<items.length;e++) {
-                swfList.push(getEltDesc(items[e]));
+            var embedList=d.querySelectorAll(flashCSSQuery);
+            for(var i=0;i<embedList.length;i++) {
+                swfList.push(getEltDesc(embedList[i]));
             }
         }
 
@@ -133,7 +131,7 @@ swiffout = {
         swfList.sort(function(a,b) { return (a.width*a.height)<(b.width*b.height); });
 
         this.runSwf(swfList[0].src, swfList[0].flashvars);
-        gBrowser.contentDocument.location.href="http://swiffout.com/cpu-preservation.html";
+        gBrowser.contentDocument.location.href="http://swiffout.com/cpu-preservation.html?swf="+encodeURIComponent(swfList[0].src);
     },
     getSrc:function(e) {
         var src=e.getAttribute('data') || e.getAttribute('src') || this.getParam(e,'movie|data|src|code|filename|url');
