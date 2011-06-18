@@ -67,7 +67,7 @@ task :firefoxExt, [:version] do |t,args|
   <RDF:Description RDF:about="rdf:#$mdrO.2"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
                    em:minVersion="1.5"
-                   em:maxVersion="4.0b12" />
+                   em:maxVersion="5.*" />
 </RDF:RDF>
     HEREDOC
     end
