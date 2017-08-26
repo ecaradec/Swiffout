@@ -1,6 +1,8 @@
-*Swiffout is mostly unusable now. It relied on a native executable and it's mostly impossible to do now because of the security of the browser.*
+*Swiffout is mostly unusable now. It relied on a native executable and it's mostly impossible to do now because of the security of the browsers.*
 
 Swiffout is a browser addon that allows to play flash games as if they were desktop games.
+
+Chrome, Firefox and IE extensions are all contained in that repository, so is the native component and installer for IE.
 
 https://swiffout.com/
 
